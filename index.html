@@ -21,6 +21,30 @@
       background: linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0) 65%);
       z-index:2; pointer-events:none;
     }
+    #bird-img {
+      position:absolute;
+      width:280px; height:231px;
+      z-index:5; pointer-events:none;
+      filter: brightness(0) invert(1)
+              drop-shadow(0 0 2px rgba(255,255,255,0.80))
+              drop-shadow(0 0 6px rgba(255,255,255,0.42))
+              drop-shadow(0 0 16px rgba(255,252,240,0.20))
+              drop-shadow(0 0 32px rgba(255,248,220,0.09));
+      opacity:0;
+      transform: translateX(70px);
+      transform-origin: 1px 74px;
+      transition: opacity 2s ease-out,
+                  transform 1.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    @keyframes birdHover {
+      0%, 100% { transform: rotate(0deg); }
+      30%       { transform: rotate(0.9deg); }
+      70%       { transform: rotate(-0.9deg); }
+    }
+    #bird-img.hovering {
+      animation: birdHover 4s ease-in-out infinite;
+      transition: none;
+    }
     canvas { display:block; width:100vw; height:100vh; position:absolute; top:0; left:0; z-index:3; }
     #nav { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:4; }
     .btn {
@@ -90,6 +114,7 @@
 <video id="video-bg" src="trefoil_bg.mp4" autoplay muted playsinline></video>
 <div id="gradient-overlay"></div>
 <canvas id="c"></canvas>
+<object id="bird-img" data="birdlayered.svg" type="image/svg+xml" onload="positionBird()"></object>
 <div id="nav">
 
   <a class="btn centre" id="btn-0" href="#">
@@ -99,11 +124,11 @@
         <!-- Centre: equilateral triangle inscribed in circle — convergence of three paths -->
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
           <polygon points="20,7 33.1,28.5 6.9,28.5"
-            stroke="rgba(248,240,220,0.90)" stroke-width="1.1"
+            stroke="rgba(255,255,255,0.90)" stroke-width="1.1"
             stroke-linejoin="round"/>
           <circle cx="20" cy="20.5" r="5.5"
-            stroke="rgba(248,240,220,0.55)" stroke-width="0.8"/>
-          <circle cx="20" cy="20.5" r="1.5" fill="rgba(255,252,240,0.95)"/>
+            stroke="rgba(255,255,255,0.55)" stroke-width="0.8"/>
+          <circle cx="20" cy="20.5" r="1.5" fill="rgba(255,255,255,0.95)"/>
         </svg>
       </div>
     </div>
@@ -125,10 +150,10 @@
         <!-- Learning: nested hexagons — layers of knowledge expanding outward -->
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
           <polygon points="16,4 26,10 26,22 16,28 6,22 6,10"
-            stroke="rgba(248,240,220,0.90)" stroke-width="1"/>
+            stroke="rgba(255,255,255,0.90)" stroke-width="1"/>
           <polygon points="16,9 22,12.5 22,19.5 16,23 10,19.5 10,12.5"
-            stroke="rgba(248,240,220,0.55)" stroke-width="0.75"/>
-          <circle cx="16" cy="16" r="1.5" fill="rgba(255,252,240,0.95)"/>
+            stroke="rgba(255,255,255,0.55)" stroke-width="0.75"/>
+          <circle cx="16" cy="16" r="1.5" fill="rgba(255,255,255,0.95)"/>
         </svg>
       </div>
     </div>
@@ -150,10 +175,10 @@
         <!-- Research: vesica piscis — two intersecting circles, the lens of inquiry -->
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
           <circle cx="13" cy="16" r="7.5"
-            stroke="rgba(248,240,220,0.90)" stroke-width="1"/>
+            stroke="rgba(255,255,255,0.90)" stroke-width="1"/>
           <circle cx="19" cy="16" r="7.5"
-            stroke="rgba(248,240,220,0.90)" stroke-width="1"/>
-          <circle cx="16" cy="16" r="1.4" fill="rgba(255,252,240,0.95)"/>
+            stroke="rgba(255,255,255,0.90)" stroke-width="1"/>
+          <circle cx="16" cy="16" r="1.4" fill="rgba(255,255,255,0.95)"/>
         </svg>
       </div>
     </div>
@@ -175,10 +200,10 @@
         <!-- Applied: diamond with cross — four directions, grounded and reaching -->
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
           <polygon points="16,5 27,16 16,27 5,16"
-            stroke="rgba(248,240,220,0.90)" stroke-width="1" stroke-linejoin="round"/>
-          <line x1="16" y1="5"  x2="16" y2="27" stroke="rgba(248,240,220,0.45)" stroke-width="0.7"/>
-          <line x1="5"  y1="16" x2="27" y2="16" stroke="rgba(248,240,220,0.45)" stroke-width="0.7"/>
-          <circle cx="16" cy="16" r="1.4" fill="rgba(255,252,240,0.95)"/>
+            stroke="rgba(255,255,255,0.90)" stroke-width="1" stroke-linejoin="round"/>
+          <line x1="16" y1="5"  x2="16" y2="27" stroke="rgba(255,255,255,0.45)" stroke-width="0.7"/>
+          <line x1="5"  y1="16" x2="27" y2="16" stroke="rgba(255,255,255,0.45)" stroke-width="0.7"/>
+          <circle cx="16" cy="16" r="1.4" fill="rgba(255,255,255,0.95)"/>
         </svg>
       </div>
     </div>
@@ -214,7 +239,7 @@ function resize() {
   ctx.resetTransform(); ctx.scale(dpr, dpr)
 }
 window.addEventListener('resize', () => {
-  resize(); build(); buildHaze(); positionButtons()
+  resize(); build(); buildHaze(); positionButtons(); positionBird()
   btnAuraAlpha[0] = btnAuraAlpha[1] = btnAuraAlpha[2] = btnAuraAlpha[3] = 0
   btnAlpha = 0; btnAnimStartT = null
   initReveal()
@@ -270,9 +295,9 @@ class Node {
     const peak = Math.min(basePeak * (1 + ffBright * 2.5), 0.95) * fa
 
     g.addColorStop(0,    `rgba(255,255,255,${peak})`)
-    g.addColorStop(0.20, `rgba(250,248,242,${peak * 0.55})`)
-    g.addColorStop(0.50, `rgba(215,165,72,${peak*0.40})`)
-    g.addColorStop(1,    'rgba(220,218,215,0)')
+    g.addColorStop(0.20, `rgba(255,255,255,${peak * 0.55})`)
+    g.addColorStop(0.50, `rgba(255,255,255,${peak*0.20})`)
+    g.addColorStop(1,    'rgba(255,255,255,0)')
     ctx.beginPath(); ctx.arc(this.x, this.y, glowR, 0, TAU)
     ctx.fillStyle = g; ctx.fill()
 
@@ -387,20 +412,20 @@ class Edge {
       // Glow pass — wide soft halo
       ctx.save()
       ctx.lineWidth = this.thickness * 6
-      ctx.strokeStyle = `rgba(255,252,248,${0.07 * fa})`
+      ctx.strokeStyle = `rgba(255,255,255,${0.07 * fa})`
       ctx.stroke()
       ctx.restore()
       // Bright centre pass — reuse same path still in ctx
       ctx.lineWidth = this.thickness * 1.8
-      ctx.strokeStyle = `rgba(255,252,248,${0.62 * fa})`
+      ctx.strokeStyle = `rgba(255,255,255,${0.62 * fa})`
       ctx.stroke()
     } else if (this.isRootEdge) {
       ctx.lineWidth = this.thickness * 1.4
-      ctx.strokeStyle = `rgba(252,250,245,${this.alpha * fa * 1.3})`
+      ctx.strokeStyle = `rgba(255,255,255,${this.alpha * fa * 1.3})`
       ctx.stroke()
     } else {
       ctx.lineWidth = this.thickness
-      ctx.strokeStyle = `rgba(252,250,245,${this.alpha * fa})`
+      ctx.strokeStyle = `rgba(255,255,255,${this.alpha * fa})`
       ctx.stroke()
     }
   }
@@ -657,6 +682,23 @@ function positionButtons() {
   })
 }
 
+function positionBird() {
+  const bird = document.getElementById('bird-img')
+  if (!bird) return
+  const p1 = btnPositions()[1]   // ALEF LEARNING center
+  const ringR = 40
+  // Bird is 280px wide; natural SVG ratio 149.27:241.58 ≈ 1:1.619
+  const bw = 280
+  const bh = bw * (241.5757 / 149.2742)
+  // Beak tip is at ~0.5% from left and ~16.3% from top of the rendered SVG
+  // (calibrated at W=1728 H=963: bird left=862.6 top=186.16 → beak at btn-1 center)
+  const beakX = bw * 0.005
+  const beakY = bh * 0.163
+  // Pin beak to the centre of the Learning ring
+  bird.style.left = (p1.x - beakX) + 'px'
+  bird.style.top  = (p1.y - beakY) + 'px'
+}
+
 // ── Auras: per-button alpha, only after each ring is fully drawn ──────
 let btnAlpha = 0
 let btnAnimStartT = null
@@ -667,8 +709,8 @@ function drawButtonAuras() {
   const themes = [
     { o: '166,169,164', i: '116,125,131' },  // Centre: #A6A9A4 → #747D83
     { o: '212,216,192', i: '179,180,154' },  // Learning: #D4D8C0 → #B3B49A
-    { o: '190,165,109', i: '166,141,95' },   // btn-2 = Applied (left): #BEA56D → #A68D5F
-    { o: '155,148,165', i: '126,110,140' },  // btn-3 = Research (right): #9B94A5 → #7E6E8C
+    { o: '190,165,109', i: '166,141,95' },   // Applied (left): #BEA56D → #A68D5F
+    { o: '155,148,165', i: '126,110,140' },  // Research (right): #9B94A5 → #7E6E8C
   ]
   pos.forEach((p,i)=>{
     const a = btnAuraAlpha[i]
@@ -699,8 +741,8 @@ function drawButtonAuras() {
 
     // Highlight rim — warm light catching the edge
     const g3=ctx.createRadialGradient(p.x,p.y-28,0,p.x,p.y,38)
-    g3.addColorStop(0,   `rgba(255,248,225,${0.18*a})`)
-    g3.addColorStop(1,   `rgba(255,248,225,0)`)
+    g3.addColorStop(0,   `rgba(255,255,255,${0.18*a})`)
+    g3.addColorStop(1,   `rgba(255,255,255,0)`)
     ctx.beginPath(); ctx.arc(p.x,p.y,38,0,TAU); ctx.fillStyle=g3; ctx.fill()
   })
 }
@@ -721,8 +763,8 @@ function drawMist() {
     if (peak < 0.01) continue
     const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r)
     g.addColorStop(0,   `rgba(255,255,255,${peak})`)
-    g.addColorStop(0.5, `rgba(240,238,235,${peak*0.35})`)
-    g.addColorStop(1,   'rgba(220,218,215,0)')
+    g.addColorStop(0.5, `rgba(255,255,255,${peak*0.35})`)
+    g.addColorStop(1,   'rgba(255,255,255,0)')
     ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, TAU)
     ctx.fillStyle = g; ctx.fill()
   }
@@ -824,16 +866,16 @@ function drawCursorDot() {
   const glowR = r * 6 * glowScale
 
   const g = ctx.createRadialGradient(dx, dy, 0, dx, dy, glowR)
-  g.addColorStop(0,   `rgba(255,252,235,${glowAlpha})`)
-  g.addColorStop(0.4, `rgba(240,220,170,${glowAlpha * 0.3})`)
-  g.addColorStop(1,   'rgba(220,200,140,0)')
+  g.addColorStop(0,   `rgba(255,255,255,${glowAlpha})`)
+  g.addColorStop(0.4, `rgba(255,255,255,${glowAlpha * 0.3})`)
+  g.addColorStop(1,   'rgba(255,255,255,0)')
   ctx.beginPath(); ctx.arc(dx, dy, glowR, 0, TAU)
   ctx.fillStyle = g; ctx.fill()
 
   // Core dot — disappears as it merges into the button glow
   if (coreAlpha > 0.05) {
     ctx.beginPath(); ctx.arc(dx, dy, r * 0.55, 0, TAU)
-    ctx.fillStyle = `rgba(255,252,240,${coreAlpha})`
+    ctx.fillStyle = `rgba(255,255,255,${coreAlpha})`
     ctx.fill()
   }
 
@@ -843,9 +885,9 @@ function drawCursorDot() {
     const switchPulse = 0.5 + 0.5 * Math.sin(T * 0.07 + 1.2)
     const switchGlow = s * (0.20 + 0.18 * switchPulse)
     const gBtn = ctx.createRadialGradient(bp.x, bp.y, 0, bp.x, bp.y, 45 + switchPulse * 8)
-    gBtn.addColorStop(0,   `rgba(255,252,235,${switchGlow})`)
+    gBtn.addColorStop(0,   `rgba(255,255,255,${switchGlow})`)
     gBtn.addColorStop(0.5, `rgba(240,225,180,${switchGlow * 0.4})`)
-    gBtn.addColorStop(1,   'rgba(220,200,140,0)')
+    gBtn.addColorStop(1,   'rgba(255,255,255,0)')
     ctx.beginPath(); ctx.arc(bp.x, bp.y, 53 + switchPulse * 8, 0, TAU)
     ctx.fillStyle = gBtn; ctx.fill()
   }
@@ -952,6 +994,21 @@ function animate() {
       window._btnRevealed = true
       document.querySelectorAll('.btn').forEach(el => el.classList.add('visible'))
     }
+
+    if (!window._birdRevealed && window._btnRingDone &&
+        T >= Math.max(...window._btnRingDone)) {
+      window._birdRevealed = true
+      const bird = document.getElementById('bird-img')
+      if (bird) {
+        bird.style.opacity = '0.82'
+        bird.style.transform = 'translateX(0)'
+        bird.addEventListener('transitionend', function onFlyIn(e) {
+          if (e.propertyName !== 'opacity') return
+          bird.removeEventListener('transitionend', onFlyIn)
+          bird.classList.add('hovering')
+        })
+      }
+    }
   }
 
   ctx.clearRect(0,0,W,H)
@@ -974,7 +1031,25 @@ function animate() {
   requestAnimationFrame(animate)
 }
 
-build(); buildHaze(); positionButtons(); setupBtnHoverListeners()
+build(); buildHaze(); positionButtons(); setupBtnHoverListeners(); positionBird()
+
+// Video ease-out; CSS handles the subtle movement after it stops
+;(function(){
+  const vid = document.getElementById('video-bg')
+  if (!vid) return
+  const SLOW_WINDOW = 3
+  const MIN_RATE    = 0.06
+
+  vid.addEventListener('timeupdate', () => {
+    if (!vid.duration) return
+    const remaining = vid.duration - vid.currentTime
+    if (remaining < SLOW_WINDOW) {
+      const t = remaining / SLOW_WINDOW
+      vid.playbackRate = MIN_RATE + (1 - MIN_RATE) * (t * t * t)
+    }
+  })
+
+})()
 
 let S0 = Math.min(W, H)
 let spiralRef = nodes.filter(n => n.isRoot && !n.isBtnRing)
@@ -994,6 +1069,9 @@ function initReveal() {
   btnAlpha = 0
   btnAnimStartT = null
   window._btnRevealed = false
+  window._birdRevealed = false
+  const bird = document.getElementById('bird-img')
+  if (bird) { bird.style.opacity = '0'; bird.style.transform = 'translateX(70px)'; bird.classList.remove('hovering') }
   document.querySelectorAll('.btn').forEach(el => {
     el.classList.remove('visible')
     el.style.opacity = 0
