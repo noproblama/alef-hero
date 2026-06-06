@@ -60,6 +60,11 @@
     .btn:hover .btn-sub   { color:rgba(255,255,255,0.75); }
     .blob-svg { position:absolute; top:0; left:0; width:100%; height:100%;
                 pointer-events:none; overflow:visible; }
+  @media (max-width: 599px) {
+    .btn-text-inner { padding: 5px 8px 6px; }
+    .btn-label { font-size: 8.5px; letter-spacing: 0.12em; }
+    .btn-sub   { font-size: 7.5px; }
+  }
   </style>
   <svg width="0" height="0" style="position:absolute">
     <defs>
@@ -218,6 +223,11 @@ class Node {
   constructor(x, y, w, isBtnDot) {
     this.x = x; this.y = y; this.w = w
     this.isBtnDot = isBtnDot || false
+    this.bx = x; this.by = y
+    this.driftAmp = 0.45 + Math.random() * 0.65
+    this.driftPhX = Math.random() * TAU
+    this.driftPhY = Math.random() * TAU + 1.27
+    this.driftFq  = 0.0025 + Math.random() * 0.0025
     this.sizeMult = 0.4 + Math.pow(Math.random(), 1.5) * 0.9
     this.glowMult = 0.3 + Math.pow(Math.random(), 1.2) * 1.1
     this.r     = (0.5 + w * 1.2) * this.sizeMult
@@ -314,7 +324,7 @@ class Edge {
   }
   getPoints() {
     const pts = [{ x: this.a.x, y: this.a.y }]
-    const ws = 3.8
+    const ws = 6.0
     const wOff = ws * Math.sin(T * 0.004 + this.windPhase) *
                  Math.max(0, Math.sin(T * 0.0011)) * this.windSign
     for (const c of this.ctrl) {
@@ -324,10 +334,10 @@ class Edge {
       let tgt = 0
       if (mouse.x !== null && c.amp > 0) {
         const dx = mouse.x - c.bx, dy = mouse.y - c.by
-        const d = Math.sqrt(dx*dx + dy*dy), R = 300
-        if (d < R && d > 1) tgt = (dx * c.nx + dy * c.ny) * Math.pow(1 - d/R, 2.2) * 7.2 / d
+        const d = Math.sqrt(dx*dx + dy*dy), R = 380
+        if (d < R && d > 1) tgt = (dx * c.nx + dy * c.ny) * Math.pow(1 - d/R, 1.8) * 14 / d
       }
-      c.curLean += (tgt - c.curLean) * 0.016
+      c.curLean += (tgt - c.curLean) * 0.026
       perp += c.curLean
       pts.push({ x: c.bx + c.nx * perp, y: c.by + c.ny * perp })
     }
@@ -601,16 +611,24 @@ function build() {
 
 function btnPositions() {
   const cx = W * 0.5, cy = H * 0.52
-  const pad = 50   // padding from button centre to screen edge
-  const bw  = 80   // button ring diameter
+  const isMobile = W < 600
+  const pad  = isMobile ? 30 : 50
+  const bw   = 80
   const safe = bw / 2 + pad
-  // Each satellite is placed at a fraction of the screen, clamped so it stays visible
-  // 0=Centre, 1=Top, 2=BottomLeft, 3=BottomRight
+  const S    = Math.min(W, H)
+  if (isMobile) {
+    return [
+      { x: cx, y: cy },
+      { x: cx, y: Math.max(safe, cy - S * 0.25) },
+      { x: Math.max(safe, W * 0.23), y: Math.min(H - safe, cy + S * 0.20) },
+      { x: Math.min(W - safe, W * 0.77), y: Math.min(H - safe, cy + S * 0.20) },
+    ]
+  }
   return [
-    { x: cx, y: cy },                                                          // Centre
-    { x: cx, y: Math.max(safe, cy - Math.min(W, H) * 0.25) },                 // Top
-    { x: Math.max(safe, cx - Math.min(W, H) * 0.22), y: Math.min(H-safe, cy + Math.min(W,H)*0.18) }, // BottomLeft
-    { x: Math.min(W-safe, cx + Math.min(W, H) * 0.22), y: Math.min(H-safe, cy + Math.min(W,H)*0.18) }, // BottomRight
+    { x: cx, y: cy },
+    { x: cx, y: Math.max(safe, S * 0.25 < cy ? cy - S * 0.25 : safe) },
+    { x: Math.max(safe, cx - S * 0.22), y: Math.min(H - safe, cy + S * 0.18) },
+    { x: Math.min(W - safe, cx + S * 0.22), y: Math.min(H - safe, cy + S * 0.18) },
   ]
 }
 
@@ -753,17 +771,23 @@ window.addEventListener('click', e=>{
 })
 
 let cursorMagnet = { strength: 0 }
+let hoveredBtnIdx = -1
+
+function setupBtnHoverListeners() {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById(`btn-${i}`)
+    if (!el) continue
+    el.addEventListener('mouseenter', () => { hoveredBtnIdx = i })
+    el.addEventListener('mouseleave', () => { hoveredBtnIdx = -1 })
+  }
+}
 
 function drawCursorDot() {
   const mx = cursor.x, my = cursor.y
   if (mx === null) return
 
   const pos = btnPositions()
-  let nearBtn = -1, nearDist = Infinity
-  pos.forEach((p, i) => {
-    const d = Math.hypot(mx - p.x, my - p.y)
-    if (d < 100 && d < nearDist) { nearDist = d; nearBtn = i }
-  })
+  const nearBtn = hoveredBtnIdx
 
   const targetStrength = nearBtn >= 0 ? 1 : 0
   const lerpRate = targetStrength > cursorMagnet.strength ? 0.05 : 0.10  // fast in, slow out
@@ -778,15 +802,15 @@ function drawCursorDot() {
     dy = my + (pos[nearBtn].y - my) * s
   }
 
-  const pulse = 0.7 + 0.3 * Math.sin(T * 0.06)
+  const pulse = 0.45 + 0.55 * Math.sin(T * 0.055)
 
   // As dot reaches button: it grows into a glow, core fades, becomes pure light
   const coreAlpha = (1 - s) * (0.85 + 0.15 * pulse)
   const glowScale = 1 + s * 5    // glow expands as it merges into button
-  const glowAlpha = 0.28 * (pulse + s * 0.5)
+  const glowAlpha = 0.46 * (pulse + s * 0.5)
 
-  const r = (1.8 + 0.8 * pulse) * Math.max(0.4, 1 - s * 0.6)
-  const glowR = r * 4 * glowScale
+  const r = (2.0 + 1.0 * pulse) * Math.max(0.4, 1 - s * 0.6)
+  const glowR = r * 6 * glowScale
 
   const g = ctx.createRadialGradient(dx, dy, 0, dx, dy, glowR)
   g.addColorStop(0,   `rgba(255,252,235,${glowAlpha})`)
@@ -873,6 +897,14 @@ function animate() {
   updateBtnZones()
 
   // Soft element fade-in
+
+  // Breathing drift — subtle organic movement of non-ring nodes
+  for (const n of nodes) {
+    if (n.isBtnRing || !n.driftAmp) continue
+    const ph = T * n.driftFq
+    n.x = n.bx + Math.sin(ph + n.driftPhX) * n.driftAmp
+    n.y = n.by + Math.sin(ph * 0.71 + n.driftPhY) * n.driftAmp
+  }
   for (const n of nodes) {
     if (n.isBtnDot || !n.fadeWindow) continue
     if (T >= n.birthT) n.alpha = Math.min(1, (T - n.birthT) / n.fadeWindow)
@@ -931,7 +963,7 @@ function animate() {
   requestAnimationFrame(animate)
 }
 
-build(); buildHaze(); positionButtons()
+build(); buildHaze(); positionButtons(); setupBtnHoverListeners()
 
 let S0 = Math.min(W, H)
 let spiralRef = nodes.filter(n => n.isRoot && !n.isBtnRing)
