@@ -64,7 +64,7 @@
                     blur(18px);
                 opacity: 0;
                 transform: translateX(70px);
-                transform-origin: 1px 74px;
+                transform-origin: 1px 48px;
                 transition:
                     opacity 2s ease-out,
                     transform 1.8s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -83,9 +83,8 @@
                 pointer-events: none;
                 opacity: 0;
                 transform: translateX(70px);
-                /* OPTION A: birdlayered.svg */
-                transform-origin: 1px 74px;
-                /* OPTION B: hummingbird.svg */ /* transform-origin: 1px 48px; */
+                /* beak pivot — JS sets exact value; this is the fallback */
+                transform-origin: 1px 48px;
                 transition:
                     opacity 2s ease-out,
                     transform 1.8s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -215,7 +214,6 @@
                 display: block;
             }
             .btn.centre .btn-label {
-                font-size: 15px;
                 transition: color 0.5s ease;
             }
             .btn-sub {
@@ -242,17 +240,29 @@
                 pointer-events: none;
                 overflow: visible;
             }
+            /* ── Tablet ─────────────────────────────────────── */
+            @media (max-width: 900px) {
+                .btn-label,
+                .btn.centre .btn-label { font-size: 11px; letter-spacing: 0.13em; }
+                .btn-sub   { font-size: 10px; }
+            }
+            /* ── Mobile ─────────────────────────────────────── */
             @media (max-width: 599px) {
-                .btn-text-inner {
-                    padding: 5px 8px 6px;
-                }
-                .btn-label {
-                    font-size: 8.5px;
-                    letter-spacing: 0.12em;
-                }
-                .btn-sub {
-                    font-size: 7.5px;
-                }
+                html, body { height: auto; overflow-y: auto; }
+                body { min-height: 170vh; }
+
+                /* Pin canvas + all layers to viewport so page can scroll */
+                #bg-layer, #video-bg, #gradient-overlay, canvas,
+                #bird-glow, #bird-img, #nav { position: fixed; }
+
+                /* Smaller bird */
+                #bird-glow, #bird-img { width: 110px; height: 141px; }
+
+                /* Hide button text on mobile — icons are sufficient */
+                .btn-text { display: none; }
+
+                /* Community text narrower */
+                #community-text { width: 160px; }
             }
             #community-text {
                 position: absolute;
@@ -350,7 +360,7 @@
                         viewBox="0 0 96 96"
                     ></svg>
                     <div class="btn-icon">
-                        <img src="centre.svg" width="40" height="40" alt="" />
+                        <img src="centre.svg" width="32" height="32" alt="" />
                     </div>
                 </div>
                 <div class="btn-text">
@@ -816,7 +826,7 @@
                             1,
                             this.fadeAlpha + this.fadeSpeed,
                         );
-                    const fa = this.fadeAlpha;
+                    const fa = this.fadeAlpha * (this.dimMult ?? 1);
                     if (this.isSpineEdge) {
                         // Outer golden halo
                         ctx.save();
@@ -982,8 +992,8 @@
 
                 // Spiral spine
                 const spiralNodes = [];
-                // More turns on narrow screens (mobile), fewer on wide — adapts to viewport
-                const totalTurns = W < 600 ? 5.5 : W < 900 ? 4.5 : 3.8;
+                // Fewer turns on smaller screens — simpler spiral on mobile
+                const totalTurns = W < 480 ? 2.0 : W < 600 ? 2.5 : W < 900 ? 3.2 : 3.8;
                 const nSpiral = Math.round(28 + totalTurns * 6); // more nodes for more turns
                 for (let i = 0; i < nSpiral; i++) {
                     const t = i / (nSpiral - 1);
@@ -1431,6 +1441,7 @@
                         e.isRootEdge = true;
                         e.isRingEdge2 = true;
                         e.depth = 1;
+                        e.dimMult = 0.28;
                         e.birthT = Math.max(end.birthT, start.birthT);
                         e.fadeAlpha = 0;
                         e.fadeWindow = 50;
@@ -1460,6 +1471,7 @@
                         const e = new Edge(tn, nn);
                         e.isRootEdge = true;
                         e.depth = 1;
+                        e.dimMult = 0.28;
                         e.birthT = tn.birthT;
                         e.fadeAlpha = 0;
                         e.fadeWindow = 50;
@@ -1526,16 +1538,19 @@
                 if (!bird) return;
                 const p1 = btnPositions()[1]; // ALEF LEARNING center
                 const ringR = 40;
-                // OPTION A: birdlayered.svg — calibrated at W=1728 H=963: left=862.6 top=186.16
-                const bw = 180,
-                    bh = bw * (241.5757 / 86.2742); // ≈ 453px
-                const beakX = bw * 0.005,
-                    beakY = bh * 0.163;
+                // OPTION A: birdlayered.svg — SVG intrinsic 564×466, aspect ratio 466/564
+                const bw = W < 600 ? 110 : 180;
+                const bh = bw * (466 / 564);          // ≈ 148.7px at bw=180
+                const beakX = bw * 0.005;
+                const beakY = bh * 0.32;              // 74/231 from original CSS calibration
 
-                // OPTION B: hummingbird.svg — calibrated at W=1200 H=961: left=600 top=211.355
-                // const bw = 168, bh = bw * (971 / 1159)           // ≈ 140.7px
-                // const beakX = bw * 0.00, beakY = bh * 0.342
-                // Pin beak to the centre of the Learning ring
+                [bird, document.getElementById("bird-glow")].forEach(el => {
+                    if (!el) return;
+                    el.style.width  = bw + "px";
+                    el.style.height = bh + "px";
+                    el.style.transformOrigin = `${Math.round(beakX)}px ${Math.round(beakY)}px`;
+                });
+
                 const left = p1.x - beakX + "px", top = p1.y - beakY + "px";
                 bird.style.left = left;
                 bird.style.top  = top;
@@ -2445,6 +2460,46 @@
                 font-family: -apple-system,'Helvetica Neue',Arial,sans-serif;
                 font-size: 10px; font-weight: 500; letter-spacing: 0.22em;
                 text-transform: uppercase; color: rgba(255,255,255,0.55);
+            }
+            /* ── Tablet ── */
+            @media (min-width: 600px) and (max-width: 900px) {
+                #demo-hero { max-width: 220px; }
+                #demo-hero h1 { font-size: 34px; }
+                #demo-hero p  { font-size: 13px; }
+            }
+            /* ── Mobile ── */
+            @media (max-width: 599px) {
+                /* Overlay becomes page-height so hero can sit below the fold */
+                #demo-overlay { position: absolute !important; min-height: 170vh; }
+
+                /* Header stays pinned */
+                #demo-header {
+                    position: fixed !important; z-index: 100;
+                    background: rgba(15,12,8,0.30);
+                    backdrop-filter: blur(6px);
+                    -webkit-backdrop-filter: blur(6px);
+                    padding: 14px 6%;
+                }
+                .demo-logo img { height: 26px; }
+                /* Collapse middle nav links — keep only Donate */
+                .demo-nav a:not(.demo-donate) { display: none; }
+
+                /* Hero text: scrolls below the canvas */
+                #demo-hero {
+                    position: absolute;
+                    top: 100vh;
+                    left: 0; right: 0; max-width: 100%;
+                    padding: 28px 6% 36px;
+                    background: rgba(15,12,6,0.65);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                }
+                #demo-hero h1 { font-size: 28px; margin-bottom: 14px; }
+                .demo-divider  { margin-bottom: 14px; }
+                #demo-hero p   { font-size: 13px; line-height: 1.65; }
+
+                /* Scroll indicator fixed during canvas view */
+                #demo-scroll { position: fixed; bottom: 4%; }
             }
         </style>
 
