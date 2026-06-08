@@ -38,6 +38,16 @@
                 z-index: 1;
                 pointer-events: none;
             }
+            /* Hide native video controls overlay (e.g. iOS low power mode play button) */
+            #video-bg::-webkit-media-controls,
+            #video-bg::-webkit-media-controls-overlay-play-button,
+            #video-bg::-webkit-media-controls-start-playback-button,
+            #video-bg::-webkit-media-controls-panel {
+                display: none !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                -webkit-appearance: none;
+            }
             #gradient-overlay {
                 position: absolute;
                 top: 0;
@@ -329,6 +339,8 @@
             autoplay
             muted
             playsinline
+            disablepictureinpicture
+            controlslist="nodownload nofullscreen noremoteplayback"
         ></video>
         <div id="gradient-overlay"></div>
         <canvas id="c"></canvas>
@@ -502,17 +514,25 @@
                 H = window.innerHeight;
                 canvas.width = W * dpr;
                 canvas.height = H * dpr;
+                // Force canvas CSS to match JS dimensions — prevents iOS 100vh vs innerHeight
+                // mismatch that makes ctx.arc() circles appear as ovals on mobile
+                canvas.style.width  = W + "px";
+                canvas.style.height = H + "px";
                 ctx.resetTransform();
                 ctx.scale(dpr, dpr);
             }
+            let _lastBuildW = 0;
             window.addEventListener("resize", () => {
                 resize();
-                build();
-                buildTextNodes();
-                buildHaze();
                 positionButtons();
                 positionBird();
                 positionCommunityText();
+                // Skip full topology rebuild when only height changed (iOS address-bar show/hide)
+                if (Math.abs(window.innerWidth - _lastBuildW) < 10) return;
+                _lastBuildW = window.innerWidth;
+                build();
+                buildTextNodes();
+                buildHaze();
                 btnAuraAlpha[0] =
                     btnAuraAlpha[1] =
                     btnAuraAlpha[2] =
@@ -523,6 +543,7 @@
                 initReveal();
             });
             resize();
+            _lastBuildW = window.innerWidth;
 
             const TAU = Math.PI * 2;
             function hubWeight() {
@@ -993,8 +1014,9 @@
                 // Spiral spine
                 const spiralNodes = [];
                 // Fewer turns on smaller screens — simpler spiral on mobile
-                const totalTurns = W < 480 ? 2.0 : W < 600 ? 2.5 : W < 900 ? 3.2 : 3.8;
-                const nSpiral = Math.round(28 + totalTurns * 6); // more nodes for more turns
+                const totalTurns = W < 480 ? 1.8 : W < 600 ? 2.5 : W < 900 ? 3.2 : 3.8;
+                // Fewer spine nodes on mobile — reduces total node/edge count
+                const nSpiral = W < 480 ? 20 : Math.round(28 + totalTurns * 6);
                 for (let i = 0; i < nSpiral; i++) {
                     const t = i / (nSpiral - 1);
                     const angle = t * TAU * totalTurns + Math.PI * 0.5;
@@ -1050,8 +1072,8 @@
                     edges.push(fe);
                 }
 
-                // Recursive branching from spine
-                const maxDepth = 6;
+                // Recursive branching from spine — cap depth on mobile for performance
+                const maxDepth = W < 480 ? 3 : 6;
                 const allBranchNodes = [];
 
                 function growBranch(parent, angle, length, depth, w) {
@@ -1122,8 +1144,9 @@
                     nextBranchIdx = si + 1;
 
                     // More branches everywhere, especially outer nodes
+                    // On very small screens, cap at 2 branches per node for performance
                     const roll = Math.random();
-                    const nBranches =
+                    let nBranches =
                         t > 0.85
                             ? roll < 0.3
                                 ? 5
@@ -1151,6 +1174,7 @@
                                       ? 2
                                       : 1
                                   : 1;
+                    if (W < 480) nBranches = Math.min(nBranches, 2);
                     const baseLen =
                         S * (0.045 + t * 0.09) * (0.5 + Math.random() * 0.7);
                     for (let b = 0; b < nBranches; b++) {
@@ -1559,10 +1583,22 @@
             }
 
             function positionCommunityText() {
-                const el = document.getElementById("community-text");
-                if (!el) return;
                 const u = Math.min(W, H) * 0.0028;
-                el.style.top = H * 0.82 + u * 1.5 + 8 + "px";
+                const commY = H * 0.82;
+                const el = document.getElementById("community-text");
+                if (el) el.style.top = commY + u * 1.5 + 8 + "px";
+                // On mobile, pull the scroll indicator up to sit just below COMMUNITY
+                // so the two elements read as a visual group (not separated by a large gap)
+                const scrollEl = document.getElementById("demo-scroll");
+                if (scrollEl) {
+                    if (W < 600) {
+                        scrollEl.style.bottom = "";
+                        scrollEl.style.top = commY + 20 + "px";
+                    } else {
+                        scrollEl.style.top = "";
+                        scrollEl.style.bottom = "";
+                    }
+                }
             }
 
             // ── Auras: per-button alpha, only after each ring is fully drawn ──────
@@ -2130,7 +2166,7 @@
                 ctx.fillStyle = "rgba(8,6,2,0.10)";
                 ctx.fillRect(0, 0, W, H);
                 if (hazeCanvas) ctx.drawImage(hazeCanvas, 0, 0, W, H);
-                drawMist();
+                if (W > 480) drawMist(); // skip per-node mist on very small screens
 
                 for (const e of edges) {
                     if (e.fadeAlpha > 0) e.draw();
@@ -2176,6 +2212,15 @@
             (function () {
                 const vid = document.getElementById("video-bg");
                 if (!vid) return;
+
+                // If autoplay is blocked (e.g. iOS low-power mode), hide the video so
+                // the static #bg-layer background shows cleanly without the play button
+                const playPromise = vid.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        vid.style.display = "none";
+                    });
+                }
                 const SLOW_WINDOW = 3;
                 const MIN_RATE = 0.06;
 
@@ -2498,8 +2543,9 @@
                 .demo-divider  { margin-bottom: 14px; }
                 #demo-hero p   { font-size: 13px; line-height: 1.65; }
 
-                /* Scroll indicator fixed during canvas view */
-                #demo-scroll { position: fixed; bottom: 4%; }
+                /* Scroll indicator position is set by JS (positionCommunityText)
+                   so it sits right below the COMMUNITY canvas text */
+                #demo-scroll { position: fixed; }
             }
         </style>
 
