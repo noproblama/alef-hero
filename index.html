@@ -207,18 +207,6 @@
             #btn-3 .btn-glass {
                 background: rgba(132, 61, 191, 0.18);
             }
-            /*#btn-0 .btn-glass {
-                background: rgba(105, 210, 72, 0.35);
-            }
-            #btn-1 .btn-glass {
-                background: rgba(240, 185, 65, 0.35);
-            }
-            #btn-2 .btn-glass {
-                background: rgba(80, 155, 245, 0.35);
-            }
-            #btn-3 .btn-glass {
-                background: rgba(188, 95, 255, 0.35);
-            }*/
             /* Inner disk — flat tint only, no blur, sits inside the ring with a clear gap */
             .btn-core {
                 position: absolute;
@@ -239,18 +227,6 @@
             #btn-3 .btn-core {
                 background: rgba(26, 5, 47, 0.32);
             }
-            /*#btn-0 .btn-core {
-                background: rgba(8, 22, 5, 0.35);
-            }
-            #btn-1 .btn-core {
-                background: rgba(30, 14, 2, 0.35);
-            }
-            #btn-2 .btn-core {
-                background: rgba(4, 12, 38, 0.35);
-            }
-            #btn-3 .btn-core {
-                background: rgba(14, 4, 32, 0.35);
-            }*/
             .btn-icon {
                 display: none;
             }
@@ -1318,7 +1294,7 @@
                                   : 1;
                     if (W < 480) nBranches = Math.min(nBranches, 2);
                     const baseLen =
-                        S * (0.045 + t * 0.09) * (0.5 + Math.random() * 0.7);
+                        S * (0.0225 + t * 0.045) * (0.5 + Math.random() * 0.7);
                     for (let b = 0; b < nBranches; b++) {
                         const randomAngle = Math.random() * TAU;
                         growBranch(sn, randomAngle, baseLen, 1, sn.w * 0.75);
@@ -1680,10 +1656,10 @@
                     };
                 }
                 return [
-                    sp(Math.PI * 1.4, 0.62), // btn-0 Centre  — upper-left  (230°, next ring)
+                    sp(Math.PI * 1.45, 0.62), // btn-0 Centre  — upper-left
                     { x: cx, y: cy }, // btn-1 Learning — spiral centre
-                    sp(Math.PI * 0.75, 0.56), // btn-2 Applied  — lower-left (135°)
-                    sp(Math.PI * 0.17, 0.73), // btn-3 Research — lower-right (~30°)
+                    sp(Math.PI * 0.85, 0.56), // btn-2 Applied  — lower-left
+                    sp(Math.PI * 0.2, 0.73), // btn-3 Research — lower-right
                 ];
             }
 
