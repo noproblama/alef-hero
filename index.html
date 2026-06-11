@@ -196,16 +196,16 @@
                 pointer-events: none;
             }
             #btn-0 .btn-glass {
-                background: rgba(60, 102, 179, 0.18);
+                background: rgba(65, 90, 115, 0.20);
             }
             #btn-1 .btn-glass {
-                background: rgba(77, 153, 47, 0.18);
+                background: rgba(65, 98, 52, 0.20);
             }
             #btn-2 .btn-glass {
-                background: rgba(170, 134, 30, 0.18);
+                background: rgba(122, 96, 62, 0.20);
             }
             #btn-3 .btn-glass {
-                background: rgba(132, 61, 191, 0.18);
+                background: rgba(88, 68, 112, 0.20);
             }
             /* Inner disk — flat tint only, no blur, sits inside the ring with a clear gap */
             .btn-core {
@@ -216,16 +216,16 @@
                 pointer-events: none;
             }
             #btn-0 .btn-core {
-                background: rgba(4, 15, 43, 0.32);
+                background: rgba(8, 18, 32, 0.35);
             }
             #btn-1 .btn-core {
-                background: rgba(9, 26, 5, 0.32);
+                background: rgba(8, 20, 6, 0.35);
             }
             #btn-2 .btn-core {
-                background: rgba(36, 24, 3, 0.32);
+                background: rgba(28, 20, 8, 0.35);
             }
             #btn-3 .btn-core {
-                background: rgba(26, 5, 47, 0.32);
+                background: rgba(18, 10, 30, 0.35);
             }
             .btn-icon {
                 display: none;
@@ -1738,10 +1738,10 @@
             function drawButtonAuras() {
                 const pos = btnPositions();
                 const themes = [
-                    { o: "85,128,191", i: "55,89,157" }, // Centre: blue
-                    { o: "111,166,77", i: "64,123,38" }, // Learning: green
-                    { o: "187,151,43", i: "149,115,17" }, // Applied: amber
-                    { o: "149,81,204", i: "115,49,170" }, // Research: purple
+                    { o: "82,108,135",  i: "55,78,105"  }, // Centre: slate water
+                    { o: "82,115,68",   i: "55,85,44"   }, // Learning: forest moss
+                    { o: "145,115,75",  i: "112,85,52"  }, // Applied: warm bark
+                    { o: "105,85,132",  i: "75,58,105"  }, // Research: heather dusk
                 ];
                 pos.forEach((p, i) => {
                     const a = btnAuraAlpha[i];
