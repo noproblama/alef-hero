@@ -1,0 +1,11 @@
+import { chromium } from './node_modules/playwright/index.mjs';
+import { fileURLToPath } from 'url'; import path from 'path';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const browser = await chromium.launch();
+const page = await browser.newPage();
+page.on('pageerror', e => console.log('PAGEERROR:', e.message));
+page.on('console', m => { if(m.type()==='error') console.log('CONSOLE.ERR:', m.text()); });
+await page.goto('file://'+path.join(__dirname,'index.html'));
+await page.waitForTimeout(2500);
+await browser.close();
+console.log('done');
