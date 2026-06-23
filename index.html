@@ -6,7 +6,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Libre+Baskerville:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Spectral:wght@300;400;500&family=Source+Serif+4:wght@300;400;500&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Libre+Baskerville:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Spectral:wght@300;400;500&family=Source+Serif+4:wght@300;400;500&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap"
             rel="stylesheet"
         />
         <title>Dew Web</title>
@@ -18,11 +18,11 @@
                 padding: 0;
             }
             :root {
-                --font-heading: "Libre Baskerville", Georgia, serif;
+                --font-heading: "Cormorant Garamond", Georgia, serif;
                 --font-heading-weight: 400;
-                --font-body: "Lora", Georgia, serif;
-                --font-nav: "Lora", Georgia, serif;
-                --font-nav-tracking: 0.11em;
+                --font-body: "Inter", -apple-system, sans-serif;
+                --font-nav: "Cormorant Garamond", Georgia, serif;
+                --font-nav-tracking: 0.18em;
             }
             body,
             html {
@@ -103,10 +103,10 @@
                 z-index: 6;
                 pointer-events: none;
                 opacity: 0;
-                filter: brightness(2.2)
-                    drop-shadow(0 0 3px rgba(255, 245, 200, 1))
-                    drop-shadow(0 0 8px rgba(255, 220, 120, 0.8))
-                    drop-shadow(0 0 18px rgba(255, 190, 60, 0.45));
+                filter: brightness(0) invert(1)
+                    drop-shadow(0 0 2px rgba(255, 255, 255, 0.85))
+                    drop-shadow(0 0 9px rgba(255, 200, 110, 0.7))
+                    drop-shadow(0 0 22px rgba(255, 175, 70, 0.3));
                 transform: translateX(70px);
                 /* beak pivot — JS sets exact value; this is the fallback */
                 transform-origin: 1px 48px;
@@ -289,7 +289,7 @@
             .btn-text-inner {
                 position: relative;
                 z-index: 1;
-                padding: 7px 16px 8px;
+                padding: 5px 12px 6px;
             }
             .btn-label {
                 font-family: var(--font-nav);
@@ -297,25 +297,27 @@
                 font-weight: 500;
                 letter-spacing: var(--font-nav-tracking);
                 text-transform: uppercase;
-                color: rgba(255, 255, 255, 0.9);
+                color: rgba(255, 255, 255, 0.92);
                 white-space: nowrap;
                 display: block;
                 transition: color 0.5s ease;
+                text-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
             }
             .btn-sub {
                 font-family: var(--font-body);
                 font-size: 10px;
                 letter-spacing: 0.06em;
-                color: rgba(255, 255, 255, 0.8);
+                color: rgba(255, 255, 255, 0.82);
                 display: block;
                 margin-top: 3px;
                 transition: color 0.5s ease;
+                text-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
             }
             .btn:hover .btn-label {
                 color: #fff;
             }
             .btn:hover .btn-sub {
-                color: rgba(255, 255, 255, 0.9);
+                color: rgba(255, 255, 255, 0.92);
             }
             .blob-svg {
                 position: absolute;
@@ -461,17 +463,14 @@
                 <div class="icon-img"></div>
             </div>
         </div>
-        <!-- BIRD OPTION A: birdlayered.svg (original, thicker lines) — currently active -->
-        <img id="bird-glow" src="birdlayered.svg" alt="" />
+
+        <img id="bird-glow" src="hummingbird.svg" alt="" />
         <object
             id="bird-img"
-            data="birdlayered.svg"
+            data="hummingbird.svg"
             type="image/svg+xml"
             onload="positionBird()"
         ></object>
-
-        <!-- BIRD OPTION B: hummingbird.svg (polished) -->
-        <!-- <img id="bird-img" src="hummingbird.svg" onload="positionBird()"> -->
         <!--<div id="community-text">
             <p class="community-subtitle">Our shared field</p>
             <p class="community-body">
@@ -480,7 +479,12 @@
             </p>
         </div>-->
         <div id="nav">
-            <a class="btn centre" id="btn-0" href="#">
+            <a
+                class="btn centre"
+                id="btn-0"
+                href="#"
+                data-desc="A hub for dialogue and collaborative inquiry, bringing together scholars, practitioners and communities to explore questions at the edge of psychology and human experience."
+            >
                 <div class="btn-ring">
                     <div class="btn-glass"></div>
                     <div class="btn-core"></div>
@@ -515,7 +519,12 @@
                 </div>
             </a>
 
-            <a class="btn" id="btn-1" href="#">
+            <a
+                class="btn"
+                id="btn-1"
+                href="#"
+                data-desc="Offers accredited postgraduate programmes in transpersonal psychology and consciousness studies, nurturing practitioners, researchers and educators."
+            >
                 <div class="btn-ring">
                     <div class="btn-glass"></div>
                     <div class="btn-core"></div>
@@ -550,7 +559,12 @@
                 </div>
             </a>
 
-            <a class="btn" id="btn-2" href="#">
+            <a
+                class="btn"
+                id="btn-2"
+                href="#"
+                data-desc="Bridges transpersonal knowledge and lived practice, supporting wellbeing, professional development and social impact across healthcare, education and organisational life."
+            >
                 <div class="btn-ring">
                     <div class="btn-glass"></div>
                     <div class="btn-core"></div>
@@ -585,7 +599,12 @@
                 </div>
             </a>
 
-            <a class="btn" id="btn-3" href="#">
+            <a
+                class="btn"
+                id="btn-3"
+                href="#"
+                data-desc="Advances scholarship in transpersonal psychology and consciousness studies through peer-reviewed research, and makes its publications freely accessible to all."
+            >
                 <div class="btn-ring">
                     <div class="btn-glass"></div>
                     <div class="btn-core"></div>
@@ -637,6 +656,10 @@
                 ctx.scale(dpr, dpr);
             }
             let _lastBuildW = 0;
+            let _hoverFade = 0; // 0=muted, 1=active hover
+            let _lastHovBtnIdx = -1; // last hovered btn — kept during fade-out
+            let _hoverPos = null; // interpolated world position of hover glow
+            let _bposCache = null;
             window.addEventListener("resize", () => {
                 resize();
                 positionButtons();
@@ -1509,6 +1532,7 @@
 
             function positionButtons() {
                 const L = _btnLayout();
+                _bposCache = L.map((b) => ({ x: b.x, y: b.y }));
                 L.forEach((b, i) => {
                     const el = document.getElementById(`btn-${i}`);
                     if (el) {
@@ -1537,16 +1561,17 @@
                 });
             }
 
-            function positionBird() {
+            function positionBird(event) {
                 const bird = document.getElementById("bird-img");
                 if (!bird) return;
+
                 const p1 = btnPositions()[1]; // ALEF LEARNING center
                 const ringR = 40;
-                // OPTION A: birdlayered.svg — SVG intrinsic 564×466, aspect ratio 466/564
+                // hummingbird-w-wing-n-tail.svg viewBox: 143.45 × 126.87, aspect 0.884
                 const bw = W < 600 ? 110 : 180;
-                const bh = bw * (466 / 564);
-                const beakX = bw * 0.005;
-                const beakY = bh * 0.24; // 74/231 from original CSS calibration
+                const bh = bw * (126.87 / 143.45);
+                const beakX = bw * 0.002; // head ~8% from left edge of viewBox
+                const beakY = bh * 0.3; // head top ~27% from top
 
                 [bird, document.getElementById("bird-glow")].forEach((el) => {
                     if (!el) return;
@@ -11221,14 +11246,32 @@
                         prog >= 1
                             ? P.length
                             : Math.max(2, Math.ceil(prog * P.length));
+                    // Hover brightness: smooth radial falloff from interpolated position
+                    let hm = 0.62;
+                    if (_hoverFade > 0.005 && _hoverPos) {
+                        let minD2 = Infinity;
+                        for (const p of P) {
+                            const dx = p.x - _hoverPos.x,
+                                dy = p.y - _hoverPos.y;
+                            const d2 = dx * dx + dy * dy;
+                            if (d2 < minD2) minD2 = d2;
+                        }
+                        // Smooth falloff: full brightness ≤130 px, muted ≥330 px
+                        const t = Math.max(
+                            0,
+                            Math.min(1, (Math.sqrt(minD2) - 130) / 200),
+                        );
+                        const brightMul = 1.25 - t * (1.25 - 0.18);
+                        hm = 0.62 + (brightMul - 0.62) * _hoverFade;
+                    }
                     ctx.lineWidth = h.thick ? 2.4 : 1.6;
-                    ctx.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * h.bright})`;
+                    ctx.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * h.bright * hm})`;
                     ctx.beginPath();
                     ctx.moveTo(P[0].x, P[0].y);
                     for (let i = 1; i < nPts; i++) ctx.lineTo(P[i].x, P[i].y);
                     ctx.stroke();
                     ctx.lineWidth = h.thick ? 0.9 : 0.6;
-                    ctx.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * h.bright})`;
+                    ctx.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * h.bright * hm})`;
                     ctx.beginPath();
                     ctx.moveTo(P[0].x, P[0].y);
                     for (let i = 1; i < nPts; i++) ctx.lineTo(P[i].x, P[i].y);
@@ -11655,12 +11698,23 @@
                         document
                             .getElementById(`icon-${i}`)
                             ?.classList.add("hovered");
+                        const desc = el.dataset.desc;
+                        if (desc) {
+                            const nodeDescEl =
+                                document.getElementById("hero-node-desc");
+                            const heroEl = document.getElementById("demo-hero");
+                            if (nodeDescEl) nodeDescEl.textContent = desc;
+                            if (heroEl) heroEl.classList.add("node-hovered");
+                        }
                     });
                     el.addEventListener("mouseleave", () => {
                         hoveredBtnIdx = -1;
                         document
                             .getElementById(`icon-${i}`)
                             ?.classList.remove("hovered");
+                        document
+                            .getElementById("demo-hero")
+                            ?.classList.remove("node-hovered");
                     });
                 }
             }
@@ -11720,23 +11774,28 @@
                 if (s > 0.1 && nearBtn >= 0) {
                     const bp = pos[nearBtn];
                     const switchPulse = 0.5 + 0.5 * Math.sin(T * 0.07 + 1.2);
-                    const switchGlow = s * (0.2 + 0.18 * switchPulse);
+                    const switchGlow = s * (0.28 + 0.22 * switchPulse);
+                    const glowR = 88 + switchPulse * 18;
                     const gBtn = ctx.createRadialGradient(
                         bp.x,
                         bp.y,
                         0,
                         bp.x,
                         bp.y,
-                        45 + switchPulse * 8,
+                        glowR,
                     );
                     gBtn.addColorStop(0, `rgba(255,255,255,${switchGlow})`);
                     gBtn.addColorStop(
-                        0.5,
-                        `rgba(240,225,180,${switchGlow * 0.4})`,
+                        0.35,
+                        `rgba(240,225,180,${switchGlow * 0.5})`,
+                    );
+                    gBtn.addColorStop(
+                        0.7,
+                        `rgba(255,220,140,${switchGlow * 0.15})`,
                     );
                     gBtn.addColorStop(1, "rgba(255,255,255,0)");
                     ctx.beginPath();
-                    ctx.arc(bp.x, bp.y, 53 + switchPulse * 8, 0, TAU);
+                    ctx.arc(bp.x, bp.y, glowR, 0, TAU);
                     ctx.fillStyle = gBtn;
                     ctx.fill();
                 }
@@ -11965,6 +12024,23 @@
                 ctx.fillRect(0, 0, W, H);
                 if (hazeCanvas) ctx.drawImage(hazeCanvas, 0, 0, W, H);
 
+                // Smooth hover fade: 0=fully muted, 1=node hovered
+                const _hoverTarget = hoveredBtnIdx >= 0 ? 1.0 : 0.0;
+                const _hoverRate = _hoverTarget > _hoverFade ? 0.03 : 0.012;
+                _hoverFade += (_hoverTarget - _hoverFade) * _hoverRate;
+                // Keep position reference alive during fade-out; lerp between buttons
+                if (hoveredBtnIdx >= 0) _lastHovBtnIdx = hoveredBtnIdx;
+                if (_lastHovBtnIdx >= 0 && _bposCache) {
+                    const tgt = _bposCache[_lastHovBtnIdx];
+                    if (tgt) {
+                        if (!_hoverPos) _hoverPos = { x: tgt.x, y: tgt.y };
+                        else {
+                            _hoverPos.x += (tgt.x - _hoverPos.x) * 0.05;
+                            _hoverPos.y += (tgt.y - _hoverPos.y) * 0.05;
+                        }
+                    }
+                }
+
                 drawConstellation(1);
 
                 // Ring nodes/edges — skip isBtnRing (the button-circle rings are part of path1.svg now)
@@ -12175,12 +12251,12 @@
             // ── Dev Panel (toggle with D key) ────────────────────────────────
             const FONT_PAIRS = [
                 {
-                    name: "Renaissance",
+                    name: "Cormorant + Inter",
                     heading: "'Cormorant Garamond',Georgia,serif",
-                    hw: "400",
-                    body: "'EB Garamond',Georgia,serif",
-                    nav: "'EB Garamond',Georgia,serif",
-                    navT: "0.12em",
+                    hw: "500",
+                    body: "'Inter',-apple-system,sans-serif",
+                    nav: "'Cormorant Garamond',Georgia,serif",
+                    navT: "0.18em",
                 },
                 {
                     name: "Editorial",
@@ -12194,8 +12270,8 @@
                     name: "Literary",
                     heading: "'Libre Baskerville',Georgia,serif",
                     hw: "400",
-                    body: "'Lora',Georgia,serif",
-                    nav: "'Lora',Georgia,serif",
+                    body: "'Inter',-apple-system,sans-serif",
+                    nav: "'Libre Baskerville',Georgia,serif",
                     navT: "0.11em",
                 },
                 {
@@ -12432,37 +12508,61 @@
             }
             #demo-hero {
                 position: absolute;
-                left: 6%;
-                top: auto;
-                bottom: 6%;
-                max-width: 290px;
-                padding: 0 32px 12px 0;
+                left: 0;
+                right: 0;
+                bottom: 9%;
+                max-width: none;
+                padding: 0 8%;
+                text-align: center;
             }
             #demo-hero h1 {
                 font-family: var(--font-heading);
-                font-size: 46px;
+                font-size: 42px;
                 font-weight: var(--font-heading-weight);
-                line-height: 1.18;
-                color: rgba(255, 255, 255, 0.92);
-                margin: 0 0 22px;
+                line-height: 1.12;
+                color: rgba(255, 255, 255, 0.93);
+                margin: 0 0 16px;
                 text-shadow:
-                    0 1px 20px rgba(0, 0, 0, 0.45),
-                    0 2px 6px rgba(0, 0, 0, 0.35);
+                    0 1px 30px rgba(0, 0, 0, 0.4),
+                    0 2px 8px rgba(0, 0, 0, 0.25);
             }
             .demo-divider {
                 width: 36px;
-                height: 2px;
-                background: rgba(212, 175, 70, 0.9);
-                margin-bottom: 20px;
+                height: 1px;
+                background: rgba(212, 175, 70, 0.85);
+                margin: 0 auto 16px;
             }
             #demo-hero p {
                 font-family: var(--font-body);
-                font-size: 15px;
+                font-size: 17px;
                 font-weight: 400;
-                line-height: 1.72;
-                color: rgba(255, 255, 255, 0.58);
+                line-height: 1.65;
+                color: rgba(255, 255, 255, 0.62);
                 margin: 0;
-                text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
+                text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+                letter-spacing: 0.01em;
+            }
+            .hero-copy {
+                display: grid;
+            }
+            .hero-copy > p {
+                grid-row: 1;
+                grid-column: 1;
+                transition: opacity 0.45s ease;
+            }
+            #hero-node-desc {
+                opacity: 0;
+                pointer-events: none;
+                color: rgba(242, 195, 90, 1) !important;
+                /*font-size: 16px !important;*/
+                line-height: 1.62 !important;
+            }
+            #demo-hero.node-hovered .hero-copy > p:first-child {
+                opacity: 0;
+            }
+            #demo-hero.node-hovered #hero-node-desc {
+                opacity: 1;
+                pointer-events: auto;
             }
             #demo-scroll {
                 position: absolute;
@@ -12482,43 +12582,46 @@
                 text-transform: uppercase;
                 color: rgba(255, 255, 255, 0.55);
             }
-            /* ── Tablet ── */
-            @media (min-width: 600px) and (max-width: 900px) {
+            /* ── Tablet (600-900): wrap OK, keep it readable ── */
+            @media (min-width: 600px) and (max-width: 899px) {
                 #demo-hero {
-                    max-width: 210px;
+                    bottom: 6%;
+                    padding: 0 10%;
                 }
                 #demo-hero h1 {
-                    font-size: 26px;
+                    font-size: 22px;
+                    margin-bottom: 11px;
+                }
+                #demo-hero p {
+                    font-size: 16px;
+                }
+            }
+            /* ── Medium narrow 900-1099: target single line ── */
+            @media (min-width: 900px) and (max-width: 1099px) {
+                #demo-hero {
+                    bottom: 7%;
+                    padding: 0 9%;
+                }
+                #demo-hero h1 {
+                    font-size: 27px;
+                    margin-bottom: 13px;
+                }
+                #demo-hero p {
+                    font-size: 16px;
+                }
+            }
+            /* ── Medium wide 1100-1319: single line ── */
+            @media (min-width: 1100px) and (max-width: 1319px) {
+                #demo-hero {
+                    bottom: 8%;
+                    padding: 0 8%;
+                }
+                #demo-hero h1 {
+                    font-size: 33px;
                     margin-bottom: 14px;
                 }
                 #demo-hero p {
-                    font-size: 13px;
-                }
-            }
-            /* ── Medium desktop — narrow range (Research button close to left edge) ── */
-            @media (min-width: 900px) and (max-width: 1099px) {
-                #demo-hero {
-                    max-width: 185px;
-                }
-                #demo-hero h1 {
-                    font-size: 24px;
-                    margin-bottom: 12px;
-                }
-                #demo-hero p {
-                    font-size: 12px;
-                }
-            }
-            /* ── Medium desktop — wide range ── */
-            @media (min-width: 1100px) and (max-width: 1319px) {
-                #demo-hero {
-                    max-width: 230px;
-                }
-                #demo-hero h1 {
-                    font-size: 30px;
-                    margin-bottom: 16px;
-                }
-                #demo-hero p {
-                    font-size: 13px;
+                    font-size: 18px;
                 }
             }
             /* ── Mobile ── */
@@ -12587,34 +12690,34 @@
                     border-radius: 0;
                 }
 
-                /* Hero text: bottom — no background, readable via text-shadow */
+                /* Hero text: bottom-centre on mobile */
                 #demo-hero {
                     position: absolute;
                     top: auto;
-                    bottom: 0;
+                    bottom: 5%;
                     left: 0;
                     right: 0;
                     max-width: 100%;
-                    padding: 28px 6% 24px;
+                    padding: 0 6% 20px;
+                    text-align: center;
                     background: none !important;
                 }
                 #demo-hero h1 {
-                    font-size: 22px;
-                    line-height: 1.22;
+                    font-size: 20px;
+                    line-height: 1.18;
                     margin-bottom: 10px;
                     text-shadow:
-                        0 1px 20px rgba(0, 0, 0, 0.75),
-                        0 2px 6px rgba(0, 0, 0, 0.55);
+                        0 1px 24px rgba(0, 0, 0, 0.7),
+                        0 2px 8px rgba(0, 0, 0, 0.5);
                 }
                 .demo-divider {
-                    margin-bottom: 10px;
+                    margin: 0 auto 10px;
                     width: 26px;
                 }
                 #demo-hero p {
-                    font-size: 12px;
+                    font-size: 16px;
                     line-height: 1.6;
-                    color: rgba(255, 255, 255, 0.8);
-                    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
+                    color: rgba(255, 255, 255, 0.72);
                 }
 
                 /* Show button labels on mobile (small) */
@@ -12656,15 +12759,17 @@
             </header>
 
             <div id="demo-hero">
-                <h1>Knowledge<br />in service of<br />life and society</h1>
-                <div class="demo-divider"></div>
-                <p>
-                    We integrate learning, research and practice through
-                    inquiry, collaboration and real-world impact.
-                </p>
+                <h1>Knowledge in service of life and society</h1>
+                <div class="hero-copy">
+                    <p>
+                        We integrate learning, research and practice through
+                        inquiry, collaboration and real-world impact.
+                    </p>
+                    <p id="hero-node-desc" aria-live="polite"></p>
+                </div>
             </div>
 
-            <div id="demo-scroll">
+            <!--<div id="demo-scroll">
                 <svg
                     width="22"
                     height="36"
@@ -12692,7 +12797,7 @@
                     />
                 </svg>
                 <span>Scroll to Explore</span>
-            </div>
+            </div>-->
         </div>
         <!-- ╔══════════════════════════════════════════════════════════╗
              ║  END DEMO OVERLAY                                        ║
