@@ -668,6 +668,7 @@
         <script>
             const canvas = document.getElementById("c");
             const ctx = canvas.getContext("2d");
+            const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
             let W, H, dpr;
 
             function _getViewH() {
@@ -729,8 +730,6 @@
             const mouse = { x: null, y: null, tx: null, ty: null };
             // Raw cursor position — updated instantly, no smoothing
             const cursor = { x: null, y: null };
-            // Fine-pointer check — true for mouse/trackpad, false for touchscreen
-            const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
             // Smoothed cursor velocity for leaf wind effect
             let mouseVelX = 0,
                 mouseVelY = 0,
