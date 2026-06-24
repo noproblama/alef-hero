@@ -2,9 +2,9 @@ import fs from 'fs';
 let html = fs.readFileSync('index.html', 'utf8');
 const json = fs.readFileSync('svgnet_data.json', 'utf8').trim();
 
-// remove any previously-injected SVGNET — single-line AND any orphan multiline body
-// (a multiline body starts with 'bbox:' or 'nodes:' at indent and ends at a bare '};')
-html = html.replace(/ *const SVGNET = \{[^\n]*\};\n/g, '');
+// remove any previously-injected SVGNET — single-line, multiline, or bare opener
+html = html.replace(/ *const SVGNET = \{[^\n]*\};\n/g, ''); // single-line
+html = html.replace(/^[ \t]*const SVGNET = \{\n/gm, '');   // bare opener (multiline body removed below)
 // remove orphan multiline bodies (lines starting with bbox/nodes data without a const declaration)
 const lines = html.split('\n');
 let inOrphan = false, cleanLines = [];

@@ -1,5 +1,5 @@
 import fs from 'fs';
-const svg = fs.readFileSync('full_network_circle_btn.svg','utf8');
+const svg = fs.readFileSync('network_full.svg','utf8');
 
 // Find the translate used by translated layers
 const gm = svg.match(/<g\b[^>]*transform="translate\(([-0-9.]+),([-0-9.]+)\)"/);
