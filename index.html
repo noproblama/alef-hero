@@ -411,7 +411,7 @@
                 <img class="icon-img" src="alef-centre-detailed.svg" alt="" />
             </div>
             <div class="icon-slot" id="icon-1">
-                <img class="icon-img" src="alef-learning-detailed.svg" alt="" />
+                <img class="icon-img" src="alef-learning-lotus.svg" alt="" />
             </div>
             <div class="icon-slot" id="icon-2">
                 <img class="icon-img" src="alef-applied-detailed.svg" alt="" />
@@ -558,12 +558,15 @@
             let _hoverPos = null; // interpolated world position of hover glow
             let _bposCache = null;
 
-            function _onResize() {
+            function _onResize(widthChanged) {
                 resize();
+                // Height-only change (iOS chrome bar show/hide during scroll):
+                // only update the canvas size — never reposition buttons or rebuild the net,
+                // because button positions are computed from H/2 and would jump mid-scroll.
+                if (!widthChanged) return;
                 positionButtons();
                 positionBird();
                 positionCommunityText();
-                // Skip full topology rebuild when only height changed (iOS address-bar show/hide)
                 if (Math.abs(W - _lastBuildW) < 10) return;
                 _lastBuildW = W;
                 build();
@@ -577,17 +580,20 @@
                 btnAnimStartT = null;
                 initReveal();
             }
-            window.addEventListener("resize", _onResize);
-            // visualViewport.resize also fires on scroll (offsetTop changes) — only trigger
-            // when HEIGHT changes (chrome show/hide). Firing every scroll frame would call
-            // canvas.width = ... which clears the buffer each frame.
+            window.addEventListener("resize", () => _onResize(true));
+            // visualViewport.resize fires when the chrome bar shows/hides (height-only change).
+            // We only update canvas dimensions in that case — no repositioning.
             if (window.visualViewport) {
+                let _prevVPW = window.visualViewport.width;
                 let _prevVPH = window.visualViewport.height;
                 window.visualViewport.addEventListener("resize", () => {
+                    const w = window.visualViewport.width;
                     const h = window.visualViewport.height;
-                    if (Math.abs(h - _prevVPH) < 2) return;
+                    const wChanged = Math.abs(w - _prevVPW) > 4;
+                    if (Math.abs(h - _prevVPH) < 2 && !wChanged) return;
+                    _prevVPW = w;
                     _prevVPH = h;
-                    _onResize();
+                    _onResize(wChanged);
                 });
             }
             resize();
