@@ -183,15 +183,28 @@
                 pointer-events: none;
             }
             /* Frosted glass — network visible through button, integrated into the light web */
+            #btn-0 .btn-core {
+                box-shadow: 0 0 15px 0px #b83b00d4;
+            }
+            #btn-1 .btn-core {
+                box-shadow: 0 0 15px 0px #086d96b3;
+            }
+            #btn-2 .btn-core {
+                box-shadow: 0 0 15px 0px #683a06ba;
+            }
+            #btn-3 .btn-core {
+                box-shadow: 0 0 15px 0px #0166799c;
+            }
+
             #btn-0 .btn-core,
             #btn-1 .btn-core,
             #btn-2 .btn-core,
             #btn-3 .btn-core {
                 background: radial-gradient(
                     circle,
-                    rgba(255, 248, 225, 0.72) 0%,
-                    rgba(255, 235, 190, 0.28) 80%,
-                    rgba(255, 220, 160, 0) 100%
+                    rgb(249 246 238 / 92%) 0%,
+                    rgb(244 228 193 / 60%) 70%,
+                    rgb(255 220 160 / 0%) 100%
                 );
             }
             .btn-icon {
@@ -238,7 +251,7 @@
             .btn-label {
                 font-family: var(--font-nav);
                 font-size: 14px;
-                font-weight: 900;
+                font-weight: 500;
                 letter-spacing: var(--font-nav-tracking);
                 text-transform: uppercase;
                 color: rgba(255, 255, 255, 1);
@@ -246,8 +259,8 @@
                 display: block;
                 transition: color 0.5s ease;
                 text-shadow:
-                    0 1px 8px rgba(0, 0, 0, 0.6),
-                    0 2px 8px rgba(0, 0, 0, 0.2);
+                    0 1px 8px rgba(0, 0, 0, 1),
+                    0 2px 8px rgba(0, 0, 0, 0.4);
             }
             .btn-sub {
                 font-family: var(--font-body);
@@ -258,8 +271,8 @@
                 margin-top: 3px;
                 transition: color 0.5s ease;
                 text-shadow:
-                    0 1px 8px rgba(0, 0, 0, 0.6),
-                    0 2px 8px rgba(0, 0, 0, 0.2);
+                    0 1px 8px rgba(0, 0, 0, 1),
+                    0 2px 8px rgba(0, 0, 0, 0.4);
                 white-space: nowrap;
             }
             .btn:hover .btn-label {
