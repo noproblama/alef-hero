@@ -94,28 +94,26 @@
                 pointer-events: none;
                 opacity: 0;
                 background: transparent;
-                transform: translateX(70px);
                 /* beak pivot — JS sets exact value; this is the fallback */
                 transform-origin: 1px 48px;
                 transition:
-                    opacity 2s ease-out,
-                    transform 1.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+                    opacity 0.3s ease-out,
+                    transform 8s cubic-bezier(0.22, 0.61, 0.36, 1);
             }
             @keyframes birdHover {
                 0%,
                 100% {
                     transform: rotate(0deg);
                 }
-                30% {
+                50% {
                     transform: rotate(0.9deg);
                 }
-                70% {
+                80% {
                     transform: rotate(-0.9deg);
                 }
             }
             #bird-img.hovering {
-                /* no CSS animation on the object — wing/tail move via SMIL inside the SVG */
-                transition: none;
+                animation: birdHover 4s ease 0s infinite alternate;
             }
             canvas {
                 display: block;
@@ -181,19 +179,28 @@
                 border-radius: 50%;
                 z-index: 2;
                 pointer-events: none;
+                transition: box-shadow 0.5s ease-in;
+                --shadow-blur-0: 20px;
+                --shadow-blur-1: 20px;
+                --shadow-blur-2: 20px;
+                --shadow-blur-3: 20px;
             }
             /* Frosted glass — network visible through button, integrated into the light web */
+            /* Alef Centre */
             #btn-0 .btn-core {
-                box-shadow: 0 0 15px 0px #b83b00d4;
+                box-shadow: 0 0 var(--shadow-blur-0) 0px #3f6632;
             }
+            /* Alef Learning */
             #btn-1 .btn-core {
-                box-shadow: 0 0 15px 0px #086d96b3;
+                box-shadow: 0 0 var(--shadow-blur-1) 0px #5e92db;
             }
+            /* Alef Applied */
             #btn-2 .btn-core {
-                box-shadow: 0 0 15px 0px #683a06ba;
+                box-shadow: 0 0 var(--shadow-blur-2) 0px #796c50;
             }
+            /* Alef Research */
             #btn-3 .btn-core {
-                box-shadow: 0 0 15px 0px #0166799c;
+                box-shadow: 0 0 var(--shadow-blur-3) 0px #2c4d66;
             }
 
             #btn-0 .btn-core,
@@ -210,6 +217,7 @@
             .btn-icon {
                 display: none;
             }
+
             /* Icon overlay — above canvas so icons are always visible */
             #btn-icons {
                 position: absolute;
@@ -229,14 +237,19 @@
                 justify-content: center;
                 opacity: 0;
                 transition:
-                    transform 0.7s ease,
+                    transform 0.7s ease-out,
                     opacity 0.8s ease;
             }
             .icon-slot .icon-img {
                 display: block;
                 width: 40px;
                 height: 40px;
-                overflow: visible;
+                transition:
+                    transform 0.7s ease-out,
+                    opacity 0.8s ease;
+            }
+            .icon-slot.hovered .icon-img {
+                transform: scale(1.1);
             }
             .btn-text {
                 margin-top: 9px;
@@ -280,6 +293,18 @@
             }
             .btn:hover .btn-sub {
                 color: rgba(255, 255, 255, 0.92);
+            }
+            .btn:hover#btn-0 .btn-core {
+                --shadow-blur-0: 40px;
+            }
+            .btn:hover#btn-1 .btn-core {
+                --shadow-blur-1: 40px;
+            }
+            .btn:hover#btn-2 .btn-core {
+                --shadow-blur-2: 40px;
+            }
+            .btn:hover#btn-3 .btn-core {
+                --shadow-blur-3: 40px;
             }
             /* ── Tablet ─────────────────────────────────────── */
             @media (max-width: 900px) {
@@ -366,7 +391,7 @@
             #community-text {
                 position: absolute;
                 left: 50%;
-                transform: translateX(-50%);
+                transform: translateX(-5 translateY(0) 0%);
                 width: 220px;
                 text-align: center;
                 pointer-events: none;
@@ -408,16 +433,16 @@
         <canvas id="c"></canvas>
         <div id="btn-icons">
             <div class="icon-slot" id="icon-0">
-                <img class="icon-img" src="alef-centre-detailed.svg" alt="" />
+                <img class="icon-img" src="alef-centre.svg" alt="" />
             </div>
             <div class="icon-slot" id="icon-1">
-                <img class="icon-img" src="alef-learning-lotus.svg" alt="" />
+                <img class="icon-img" src="alef-learning.svg" alt="" />
             </div>
             <div class="icon-slot" id="icon-2">
-                <img class="icon-img" src="alef-applied-detailed.svg" alt="" />
+                <img class="icon-img" src="alef-applied.svg" alt="" />
             </div>
             <div class="icon-slot" id="icon-3">
-                <img class="icon-img" src="alef-research-detailed.svg" alt="" />
+                <img class="icon-img" src="alef-research.svg" alt="" />
             </div>
         </div>
 
@@ -428,7 +453,7 @@
         ></object>
         <div id="nav">
             <a
-                class="btn centre"
+                class="btn centre hover-sound-btn"
                 id="btn-0"
                 href="#"
                 data-desc="A hub for dialogue and collaborative inquiry, bringing together scholars, practitioners and communities to explore questions at the edge of psychology and human experience."
@@ -453,7 +478,7 @@
             </a>
 
             <a
-                class="btn"
+                class="btn hover-sound-btn"
                 id="btn-1"
                 href="#"
                 data-desc="Offers accredited postgraduate programmes in transpersonal psychology and consciousness studies, nurturing practitioners, researchers and educators."
@@ -478,7 +503,7 @@
             </a>
 
             <a
-                class="btn"
+                class="btn hover-sound-btn"
                 id="btn-2"
                 href="#"
                 data-desc="Bridges transpersonal knowledge and lived practice, supporting wellbeing, professional development and social impact across healthcare, education and organisational life."
@@ -503,7 +528,7 @@
             </a>
 
             <a
-                class="btn"
+                class="btn hover-sound-btn"
                 id="btn-3"
                 href="#"
                 data-desc="Advances scholarship in transpersonal psychology and consciousness studies through peer-reviewed research, and makes its publications freely accessible to all."
@@ -570,7 +595,6 @@
                 if (Math.abs(W - _lastBuildW) < 10) return;
                 _lastBuildW = W;
                 build();
-                buildHaze();
                 btnAuraAlpha[0] =
                     btnAuraAlpha[1] =
                     btnAuraAlpha[2] =
@@ -1185,7 +1209,7 @@
                         ic.style.top = b.y + "px";
                         const img = ic.querySelector(".icon-img");
                         if (img) {
-                            const s = Math.round(b.d * 1);
+                            const s = Math.round(b.d * 0.5);
                             img.style.width = s + "px";
                             img.style.height = s + "px";
                         }
@@ -1202,10 +1226,10 @@
                 // hummingbird SVG viewBox: 143.45 × 134.87 (8-unit headroom at top), aspect 0.940
                 const bw = W < 600 ? 88 : 144;
                 const bh = bw * (134.87 / 143.45);
-                const beakX = bw * -0.35; // head ~8% from left edge of viewBox
-                const beakY = bh * 0.5; // head top ~27% from top
-                // const beakX = bw * 0.002; // head ~8% from left edge of viewBox
-                // const beakY = bh * 0.3; // head top ~27% from top
+                // const beakX = bw * -0.35; // head ~8% from left edge of viewBox
+                // const beakY = bh * 0.5; // head top ~27% from top
+                const beakX = bw * 0.002; // head ~8% from left edge of viewBox
+                const beakY = bh * 0.3; // head top ~27% from top
 
                 if (!bird) return;
                 bird.style.width = bw + "px";
@@ -1302,32 +1326,6 @@
                     ctx.arc(n.x, n.y, r, 0, TAU);
                     ctx.fillStyle = g;
                     ctx.fill();
-                }
-            }
-
-            let hazeCanvas = null;
-            function buildHaze() {
-                hazeCanvas = document.createElement("canvas");
-                hazeCanvas.width = Math.ceil(W * dpr);
-                hazeCanvas.height = Math.ceil(H * dpr);
-                const hc = hazeCanvas.getContext("2d");
-                hc.scale(dpr, dpr);
-                for (const p of [
-                    { x: W * 0.5, y: H * 0.45, r: W * 0.7, a: 0.1 },
-                ]) {
-                    const g = hc.createRadialGradient(
-                        p.x,
-                        p.y,
-                        0,
-                        p.x,
-                        p.y,
-                        p.r,
-                    );
-                    g.addColorStop(0, `rgba(200,155,75,${p.a})`);
-                    g.addColorStop(0.5, `rgba(170,125,55,${p.a * 0.4})`);
-                    g.addColorStop(1, "rgba(0,0,0,0)");
-                    hc.fillStyle = g;
-                    hc.fillRect(0, 0, W, H);
                 }
             }
 
@@ -10147,7 +10145,7 @@
                 },
                 btnFit: 1.0, // button diameter as a fraction of its SVG ring
                 netLineBright: 0.8, // thin-line brightness
-                thickBright: 0.95, // thick-line brightness
+                thickBright: 1.5, // thick-line brightness
                 gradLen: 75, // gradient band length in screen pixels
                 gradPeak: 1.0, // peak alpha for thick-line gradient travelers
                 gradPeakThin: 0.71, // peak alpha for thin-line gradient travelers
@@ -10223,9 +10221,7 @@
                     const bright =
                         (thick ? CNET.thickBright : CNET.netLineBright) *
                         (0.8 + _cnetRng() * 0.4);
-                    // single fiber per path — no sub-fibers
                     hairs.push({ pts, bright, dotIdx: [], thick });
-                    // pre-compute arc-length so the gradient is always ~45px in screen space
                     let arcLen = 0;
                     for (let i = 1; i < pts.length; i++)
                         arcLen += Math.hypot(
@@ -10233,10 +10229,7 @@
                             pts[i].y - pts[i - 1].y,
                         );
                     const avgSeg = arcLen / Math.max(1, pts.length - 1);
-                    const spanPts = Math.max(
-                        2,
-                        Math.round(CNET.gradLen / Math.max(0.5, avgSeg)),
-                    );
+                    const spanPts = 0.5; // length of the "gradient" - small dot
                     const isClosed =
                         Math.hypot(
                             pts[0].x - pts[pts.length - 1].x,
@@ -10285,9 +10278,9 @@
                 for (let i = 0; i < CNET.bgCount; i++) {
                     const x = _cnetRng() * W;
                     const y = _cnetRng() * H;
-                    const size = 0.8 + _cnetRng() * 2.6;
+                    const size = 0.1 + _cnetRng() * 1.6;
                     const phase = _cnetRng() * TAU;
-                    const bright = 0.15 + _cnetRng() * 0.75;
+                    const bright = 0.35 + _cnetRng() * 0.75;
                     const star = _cnetRng() < 0.05;
                     const inBtn = bpos.some(
                         (p) => Math.hypot(x - p.x, y - p.y) < 68,
@@ -10444,50 +10437,6 @@
                 }
             }
 
-            // ── Render the static fiber net once into an offscreen canvas ─────
-            // Many faint threads drawn with ADDITIVE blending: where they overlap
-            // (node heads, shared paths) brightness sums → bright streams of light.
-            function _renderNet() {
-                const cv = document.createElement("canvas");
-                cv.width = Math.ceil(W * dpr);
-                cv.height = Math.ceil(H * dpr);
-                const c = cv.getContext("2d");
-                c.scale(dpr, dpr);
-                c.globalCompositeOperation = "lighter";
-                c.lineCap = "round";
-                for (const h of _cs.hairs) {
-                    const P = h.pts;
-                    const lw = h.thick ? 0.9 : 0.6; // thick lines 1.5× thicker
-                    // bloom halo
-                    c.lineWidth = h.thick ? 2.4 : 1.6;
-                    c.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * h.bright})`;
-                    c.beginPath();
-                    c.moveTo(P[0].x, P[0].y);
-                    for (let i = 1; i < P.length; i++) c.lineTo(P[i].x, P[i].y);
-                    c.stroke();
-                    // crisp thread
-                    c.lineWidth = lw;
-                    c.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * h.bright})`;
-                    c.beginPath();
-                    c.moveTo(P[0].x, P[0].y);
-                    for (let i = 1; i < P.length; i++) c.lineTo(P[i].x, P[i].y);
-                    c.stroke();
-                    // dots strung along the thread
-                    if (h.dotIdx && h.dotIdx.length) {
-                        c.fillStyle = `rgba(255,242,214,${CNET.dotAlpha})`;
-                        c.beginPath();
-                        for (const idx of h.dotIdx) {
-                            const p = P[idx];
-                            if (!p) continue;
-                            c.moveTo(p.x + 0.9, p.y);
-                            c.arc(p.x, p.y, 0.9, 0, TAU);
-                        }
-                        c.fill();
-                    }
-                }
-                _netCache = cv; // junctions drawn live every frame — not baked
-            }
-
             // ── Live draw (called every frame) ────────────────────────────────
             function drawConstellation(fadeIn) {
                 if (!_cs) return;
@@ -10503,7 +10452,7 @@
                 ctx.globalAlpha = 1;
                 for (const n of _cs.bg) {
                     const sh = (Math.sin(now * 1.2 + n.phase) + 1) * 0.5;
-                    const a = (0.1 + sh * 0.7) * n.bright * CNET.bgAlpha * fi;
+                    const a = (0.5 + sh * 0.7) * n.bright * CNET.bgAlpha * fi;
                     if (n.star) {
                         _drawSparkle(n.x, n.y, a * 0.95, 2.4, 0.4);
                     } else {
@@ -10579,31 +10528,6 @@
                 ctx.globalAlpha = 1;
                 const _btnPosForDraw = _bposCache || btnPositions();
                 const _btnExclR = 68;
-                const nSpark = Math.min(_cs.dew.length, 24);
-                for (let k = 0; k < nSpark; k++) {
-                    const d = _cs.dew[k];
-                    if (
-                        _btnPosForDraw.some(
-                            (p) => Math.hypot(d.x - p.x, d.y - p.y) < _btnExclR,
-                        )
-                    )
-                        continue;
-                    const dx = d.x - cx,
-                        dy = d.y - cy;
-                    const rx = cx + dx * cs - dy * sn,
-                        ry = cy + dx * sn + dy * cs;
-                    const wn = Math.min(1, (d.w - 2) / 5);
-                    const tw =
-                        0.7 +
-                        0.3 * Math.sin(now * 2.2 + d.x * 0.01 + d.y * 0.013);
-                    _drawSparkle(
-                        rx,
-                        ry,
-                        (0.45 + wn * 0.55) * tw * fi,
-                        2 + wn * 1.8,
-                        0.4,
-                    );
-                }
 
                 // ── Junction nodes: always live, continuously twinkling ────────
                 ctx.globalCompositeOperation = "lighter";
@@ -10672,31 +10596,53 @@
                                 : Math.min(1, (T - h.birthT) / h.drawDur);
                         if (prog <= 0) continue;
                         const P = h.pts;
-                        const nPts =
+                        const n = P.length;
+
+                        // Calculate the target index going backwards from the end (n - 1)
+                        const targetIdx =
                             prog >= 1
-                                ? P.length
-                                : Math.max(2, Math.ceil(prog * P.length));
-                        ctx.lineWidth = 1.8;
+                                ? 0
+                                : Math.min(
+                                      n - 1,
+                                      Math.max(0, Math.floor((1 - prog) * n)),
+                                  );
+
+                        // --- 1. Draw the Bloom Line (Reversed) ---
+                        ctx.lineWidth = 0.6;
                         ctx.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * 0.9})`;
                         ctx.beginPath();
-                        ctx.moveTo(P[0].x, P[0].y);
-                        for (let i = 1; i < nPts; i++)
+                        ctx.moveTo(P[n - 1].x, P[n - 1].y); // Start at the end of the array
+                        for (let i = n - 2; i >= targetIdx; i--) {
                             ctx.lineTo(P[i].x, P[i].y);
+                        }
                         ctx.stroke();
+
+                        // --- 2. Draw the Crisp Line (Reversed) ---
                         ctx.lineWidth = 0.7;
                         ctx.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * 0.9})`;
                         ctx.beginPath();
-                        ctx.moveTo(P[0].x, P[0].y);
-                        for (let i = 1; i < nPts; i++)
+                        ctx.moveTo(P[n - 1].x, P[n - 1].y); // Start at the end of the array
+                        for (let i = n - 2; i >= targetIdx; i--) {
                             ctx.lineTo(P[i].x, P[i].y);
+                        }
                         ctx.stroke();
+
+                        // --- 3. Draw the Running Dot (Stays the same) ---
                         if (prog >= 1) {
-                            const n = P.length;
-                            const halfF = h.spanPts / 2;
+                            const halfF = 0.1; // Keeps it a dot
+
+                            if (!h.startTravelT) {
+                                h.startTravelT = now;
+                            }
+
+                            const travelTime = now - h.startTravelT;
+
                             const centreF =
-                                ((now * h.travelSpeed + h.travelPhase) % 1) * n;
+                                (1 - ((travelTime * h.travelSpeed) % 1)) * n;
+
                             const sf = Math.max(0, centreF - halfF);
                             const ef = Math.min(n - 1.001, centreF + halfF);
+
                             if (sf < ef) {
                                 const ptAt = (f) => {
                                     const i0 = Math.floor(f),
@@ -10707,27 +10653,19 @@
                                         y: P[i0].y + (P[i1].y - P[i0].y) * fr,
                                     };
                                 };
+
                                 let peak = CNET.gradPeakThin;
                                 if (centreF < halfF) peak *= centreF / halfF;
                                 if (n - 1 - centreF < halfF)
                                     peak *= (n - 1 - centreF) / halfF;
+
                                 if (peak > 0.01) {
                                     const spt = ptAt(sf),
                                         ept = ptAt(ef);
-                                    const grd = ctx.createLinearGradient(
-                                        spt.x,
-                                        spt.y,
-                                        ept.x,
-                                        ept.y,
-                                    );
-                                    grd.addColorStop(0, "rgba(255,242,205,0)");
-                                    grd.addColorStop(
-                                        0.5,
-                                        `rgba(255,242,205,${peak})`,
-                                    );
-                                    grd.addColorStop(1, "rgba(255,242,205,0)");
+
                                     ctx.lineWidth = 0.6;
-                                    ctx.strokeStyle = grd;
+                                    ctx.strokeStyle = `rgba(255,242,205,${peak})`;
+
                                     ctx.beginPath();
                                     ctx.moveTo(spt.x, spt.y);
                                     for (
@@ -10740,11 +10678,12 @@
                                     ctx.stroke();
                                 }
                             }
+                        } else {
+                            h.startTravelT = null;
                         }
                     }
                     ctx.restore();
                 }
-                // Persistent pulsing star-nodes — drawn with 'lighter' so glow accumulates
                 {
                     ctx.save();
                     ctx.globalCompositeOperation = "lighter";
@@ -10888,105 +10827,105 @@
                 ctx.globalAlpha = 1;
             }
 
-            window.addEventListener("click", (e) => {
-                if (
-                    e.target?.closest?.("#nav") ||
-                    e.target?.closest?.("#demo-header")
-                )
-                    return;
-                if (!_cs || !_cs.junctions || !_cs.junctions.length) return;
-                const cx = e.clientX,
-                    cy = e.clientY;
+            // window.addEventListener("click", (e) => {
+            //     if (
+            //         e.target?.closest?.("#nav") ||
+            //         e.target?.closest?.("#demo-header")
+            //     )
+            //         return;
+            //     if (!_cs || !_cs.junctions || !_cs.junctions.length) return;
+            //     const cx = e.clientX,
+            //         cy = e.clientY;
 
-                // Candidates: junction NODES (the glowing dots) + previously placed click-nodes
-                const candidates = [
-                    ..._cs.junctions.map((j) => ({ x: j.x, y: j.y })),
-                    ..._clickNodes.map((n) => ({ x: n.x, y: n.y })),
-                ];
-                candidates.sort(
-                    (a, b) =>
-                        (a.x - cx) ** 2 +
-                        (a.y - cy) ** 2 -
-                        ((b.x - cx) ** 2 + (b.y - cy) ** 2),
-                );
+            //     // Candidates: junction NODES (the glowing dots) + previously placed click-nodes
+            //     const candidates = [
+            //         ..._cs.junctions.map((j) => ({ x: j.x, y: j.y })),
+            //         ..._clickNodes.map((n) => ({ x: n.x, y: n.y })),
+            //     ];
+            //     candidates.sort(
+            //         (a, b) =>
+            //             (a.x - cx) ** 2 +
+            //             (a.y - cy) ** 2 -
+            //             ((b.x - cx) ** 2 + (b.y - cy) ** 2),
+            //     );
 
-                // Keep 4 anchors, >40px apart
-                const anchors = [];
-                for (const a of candidates) {
-                    if (
-                        anchors.every(
-                            (b) => Math.hypot(a.x - b.x, a.y - b.y) > 40,
-                        )
-                    ) {
-                        anchors.push(a);
-                        if (anchors.length >= 4) break;
-                    }
-                }
+            //     // Keep 4 anchors, >40px apart
+            //     const anchors = [];
+            //     for (const a of candidates) {
+            //         if (
+            //             anchors.every(
+            //                 (b) => Math.hypot(a.x - b.x, a.y - b.y) > 40,
+            //             )
+            //         ) {
+            //             anchors.push(a);
+            //             if (anchors.length >= 4) break;
+            //         }
+            //     }
 
-                anchors.forEach((anc, i) => {
-                    const dx = cx - anc.x,
-                        dy = cy - anc.y;
-                    const dist = Math.hypot(dx, dy);
-                    if (dist < 10) return;
+            //     anchors.forEach((anc, i) => {
+            //         const dx = cx - anc.x,
+            //             dy = cy - anc.y;
+            //         const dist = Math.hypot(dx, dy);
+            //         if (dist < 10) return;
 
-                    // Cubic bezier: asymmetric control points give the "hair on wind" feel —
-                    // tension near the anchor, relaxed near the destination
-                    const bow = 0.08 + Math.random() * 0.08; // 8–16% perpendicular offset
-                    const side = Math.random() < 0.5 ? 1 : -1;
-                    const nx = -(dy / dist),
-                        ny = dx / dist; // unit perpendicular
-                    // cp1 close to anchor (1/3), cp2 pushed to side near destination (2/3)
-                    const cp1x =
-                        anc.x + dx * 0.3 + nx * dist * bow * 0.4 * side;
-                    const cp1y =
-                        anc.y + dy * 0.3 + ny * dist * bow * 0.4 * side;
-                    const cp2x = anc.x + dx * 0.72 + nx * dist * bow * side;
-                    const cp2y = anc.y + dy * 0.72 + ny * dist * bow * side;
+            //         // Cubic bezier: asymmetric control points give the "hair on wind" feel —
+            //         // tension near the anchor, relaxed near the destination
+            //         const bow = 0.08 + Math.random() * 0.08; // 8–16% perpendicular offset
+            //         const side = Math.random() < 0.5 ? 1 : -1;
+            //         const nx = -(dy / dist),
+            //             ny = dx / dist; // unit perpendicular
+            //         // cp1 close to anchor (1/3), cp2 pushed to side near destination (2/3)
+            //         const cp1x =
+            //             anc.x + dx * 0.3 + nx * dist * bow * 0.4 * side;
+            //         const cp1y =
+            //             anc.y + dy * 0.3 + ny * dist * bow * 0.4 * side;
+            //         const cp2x = anc.x + dx * 0.72 + nx * dist * bow * side;
+            //         const cp2y = anc.y + dy * 0.72 + ny * dist * bow * side;
 
-                    const N = 40,
-                        pts = [];
-                    for (let k = 0; k <= N; k++) {
-                        const t = k / N,
-                            mt = 1 - t;
-                        pts.push({
-                            x:
-                                mt * mt * mt * anc.x +
-                                3 * mt * mt * t * cp1x +
-                                3 * mt * t * t * cp2x +
-                                t * t * t * cx,
-                            y:
-                                mt * mt * mt * anc.y +
-                                3 * mt * mt * t * cp1y +
-                                3 * mt * t * t * cp2y +
-                                t * t * t * cy,
-                        });
-                    }
-                    _clickExpansions.push({
-                        pts,
-                        birthT: T + i * 8,
-                        drawDur: 28 + Math.floor(Math.random() * 14),
-                        travelPhase: Math.random(),
-                        travelSpeed:
-                            CNET.flowSpeed * (0.5 + Math.random() * 0.5),
-                        spanPts: Math.max(
-                            3,
-                            Math.round(CNET.gradLen / Math.max(1, dist / N)),
-                        ),
-                    });
-                });
+            //         const N = 40,
+            //             pts = [];
+            //         for (let k = 0; k <= N; k++) {
+            //             const t = k / N,
+            //                 mt = 1 - t;
+            //             pts.push({
+            //                 x:
+            //                     mt * mt * mt * anc.x +
+            //                     3 * mt * mt * t * cp1x +
+            //                     3 * mt * t * t * cp2x +
+            //                     t * t * t * cx,
+            //                 y:
+            //                     mt * mt * mt * anc.y +
+            //                     3 * mt * mt * t * cp1y +
+            //                     3 * mt * t * t * cp2y +
+            //                     t * t * t * cy,
+            //             });
+            //         }
+            //         _clickExpansions.push({
+            //             pts,
+            //             birthT: T + i * 8,
+            //             drawDur: 28 + Math.floor(Math.random() * 14),
+            //             travelPhase: Math.random(),
+            //             travelSpeed:
+            //                 CNET.flowSpeed * (0.5 + Math.random() * 0.5),
+            //             spanPts: Math.max(
+            //                 3,
+            //                 Math.round(CNET.gradLen / Math.max(1, dist / N)),
+            //             ),
+            //         });
+            //     });
 
-                // Persistent pulsing node at click position
-                const f1 = 0.08 + Math.random() * 0.1;
-                _clickNodes.push({
-                    x: cx,
-                    y: cy,
-                    birthT: T + 38,
-                    phase: Math.random() * TAU,
-                    phase2: Math.random() * TAU,
-                    freq: f1,
-                    freq2: f1 * (1.47 + Math.random() * 0.52),
-                });
-            });
+            //     // Persistent pulsing node at click position
+            //     const f1 = 0.08 + Math.random() * 0.1;
+            //     _clickNodes.push({
+            //         x: cx,
+            //         y: cy,
+            //         birthT: T + 38,
+            //         phase: Math.random() * TAU,
+            //         phase2: Math.random() * TAU,
+            //         freq: f1,
+            //         freq2: f1 * (1.47 + Math.random() * 0.52),
+            //     });
+            // });
 
             let cursorMagnet = { strength: 0 };
             let hoveredBtnIdx = -1;
@@ -11016,6 +10955,7 @@
                 if (mx === null) return;
 
                 const pos = btnPositions();
+                const L = _btnLayout();
                 const nearBtn = hoveredBtnIdx;
 
                 const targetStrength = nearBtn >= 0 ? 1 : 0;
@@ -11040,10 +10980,10 @@
                 // As dot reaches button: it grows into a glow, core fades, becomes pure light
                 const coreAlpha = (1 - s) * (0.95 + 0.15 * pulse);
                 const glowScale = 1 + s * 10; // glow expands as it merges into button
-                const glowAlpha = 0.46 * (pulse + s * 0.5);
+                const glowAlpha = 0.76 * (pulse + s * 0.5);
 
                 const r = (2.0 + 1.0 * pulse) * Math.max(0.4, 1 - s * 0.6);
-                const glowR = r * 6 * glowScale;
+                const glowR = (r * 6 * glowScale * L[0].d) / 80;
 
                 const g = ctx.createRadialGradient(dx, dy, 0, dx, dy, glowR);
                 g.addColorStop(0, `rgba(255,255,255,${glowAlpha})`);
@@ -11200,29 +11140,6 @@
 
                 updateBtnZones();
 
-                // Soft element fade-in
-
-                // Breathing drift — subtle organic movement of non-ring nodes
-                for (const n of nodes) {
-                    if (n.isBtnRing || !n.driftAmp) continue;
-                    const ph = T * n.driftFq;
-                    n.x = n.bx + Math.sin(ph + n.driftPhX) * n.driftAmp;
-                    n.y = n.by + Math.sin(ph * 0.71 + n.driftPhY) * n.driftAmp;
-                }
-                for (const n of nodes) {
-                    if (n.isBtnDot || !n.fadeWindow) continue;
-                    if (T >= n.birthT)
-                        n.alpha = Math.min(1, (T - n.birthT) / n.fadeWindow);
-                }
-                for (const e of edges) {
-                    if (!e.fadeWindow) continue;
-                    if (T >= e.birthT)
-                        e.fadeAlpha = Math.min(
-                            1,
-                            (T - e.birthT) / e.fadeWindow,
-                        );
-                }
-
                 // Button canvas elements — per-button aura fades in after each ring is done
                 if (T >= 20) {
                     if (btnAnimStartT === null) btnAnimStartT = T;
@@ -11292,7 +11209,8 @@
                         const bird = document.getElementById("bird-img");
                         if (bird) {
                             bird.style.opacity = "1";
-                            bird.style.transform = "translateX(0)";
+                            bird.style.transform =
+                                "translateX(0) translateY(0)";
                             bird.addEventListener(
                                 "transitionend",
                                 function onFlyIn(e) {
@@ -11301,25 +11219,12 @@
                                         "transitionend",
                                         onFlyIn,
                                     );
-                                    bird.classList.add("hovering");
-                                    if (birdGlow)
-                                        birdGlow.classList.add("hovering");
+                                    setTimeout(
+                                        () => bird.classList.add("hovering"),
+                                        8500,
+                                    );
                                 },
                             );
-                        }
-                    }
-
-                    // Community text fades in after all button rings are done
-                    if (!window._communityTextShown) {
-                        const ctEl = document.getElementById("community-text");
-                        const commStart = window._btnRingDone
-                            ? Math.max(...window._btnRingDone) + 20
-                            : 500;
-                        if (ctEl && T >= commStart) {
-                            const ta = Math.min(1, (T - commStart) / 70);
-                            ctEl.style.opacity = ta;
-                            communityTextAlpha = ta;
-                            if (ta >= 1) window._communityTextShown = true;
                         }
                     }
                 }
@@ -11327,7 +11232,6 @@
                 ctx.clearRect(0, 0, W, H);
                 ctx.fillStyle = "rgba(8,6,2,0.10)";
                 ctx.fillRect(0, 0, W, H);
-                if (hazeCanvas) ctx.drawImage(hazeCanvas, 0, 0, W, H);
 
                 // Smooth hover fade: 0=fully muted, 1=node hovered
                 const _hoverTarget = hoveredBtnIdx >= 0 ? 1.0 : 0.0;
@@ -11349,47 +11253,14 @@
                 }
 
                 drawConstellation(1);
-
-                // Ring nodes/edges — skip isBtnRing (the button-circle rings are part of path1.svg now)
-                for (const e of edges) {
-                    if (e.fadeAlpha > 0 && !(e.a.isBtnRing || e.b.isBtnRing))
-                        e.draw();
-                }
-                drawCommunityAura();
-                for (const n of nodes) {
-                    n.tick();
-                    if (n.alpha > 0 && !n.isBtnRing) n.draw();
-                }
-                if (hasFinePointer) {
-                    pulses = pulses.filter((p) => {
-                        const a = p.update();
-                        if (!p.e.a.isBtnRing && !p.e.b.isBtnRing) p.draw();
-                        return a;
-                    });
-                }
-
-                const vg = ctx.createRadialGradient(
-                    W / 2,
-                    H / 2,
-                    Math.min(W, H) * 0.15,
-                    W / 2,
-                    H / 2,
-                    Math.max(W, H) * 0.7,
-                );
-                vg.addColorStop(0, "rgba(0,0,0,0)");
-                vg.addColorStop(1, "rgba(0,0,0,0.28)");
-                ctx.fillStyle = vg;
-                ctx.fillRect(0, 0, W, H);
                 drawCursorDot(_dt);
                 requestAnimationFrame(animate);
             }
 
             build();
-            buildHaze();
             positionButtons();
             setupBtnHoverListeners();
             positionBird();
-            positionCommunityText();
 
             // Autoplay with fallback hide if blocked (e.g. iOS low-power mode)
             (function () {
@@ -11421,7 +11292,8 @@
                 const bird = document.getElementById("bird-img");
                 if (bird) {
                     bird.style.opacity = "0";
-                    bird.style.transform = "translateX(70px)";
+                    bird.style.transform =
+                        "translateX(60vw) translateY(-180vh)";
                     bird.classList.remove("hovering");
                 }
                 document.querySelectorAll(".btn").forEach((el) => {
@@ -11455,11 +11327,11 @@
                         );
 
                     // Net starts after last button has begun appearing
-                    const NET_START = Math.max(...window._btnRingDone) + 35;
+                    const NET_START = Math.max(...window._btnRingDone) + 15;
                     const NODE_SWEEP = 120;
-                    const NODE_DUR = 24;
-                    const LINE_SWEEP = 190;
-                    const LINE_DUR = 56;
+                    const NODE_DUR = 44;
+                    const LINE_SWEEP = 90;
+                    const LINE_DUR = 150;
 
                     // Find max distance to normalise
                     let maxDist = 1;
@@ -11819,7 +11691,7 @@
                 position: absolute;
                 bottom: 5%;
                 left: 50%;
-                transform: translateX(-50%);
+                transform: translateX(-5 translateY(0) 0%);
                 display: flex;
                 flex-direction: column;
                 align-items: center;
