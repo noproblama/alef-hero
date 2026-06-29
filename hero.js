@@ -44,9 +44,17 @@ function _onResize(widthChanged) {
   btnAnimStartT = null;
   initReveal();
 }
-window.addEventListener("resize", () => _onResize(true));
-// visualViewport.resize fires when the chrome bar shows/hides (height-only change).
-// We only update canvas dimensions in that case — no repositioning.
+// On browsers with visualViewport (all modern mobile), let it own resize handling —
+// it correctly distinguishes width changes from toolbar show/hide (height-only).
+// Fall back to window.resize for older browsers, but still track width to avoid
+// misfiring positionButtons() on iOS toolbar show/hide.
+let _prevWinW = window.innerWidth;
+window.addEventListener("resize", () => {
+  if (window.visualViewport) return; // visualViewport handler below takes over
+  const wChanged = Math.abs(window.innerWidth - _prevWinW) > 4;
+  _prevWinW = window.innerWidth;
+  _onResize(wChanged);
+});
 if (window.visualViewport) {
   let _prevVPW = window.visualViewport.width;
   let _prevVPH = window.visualViewport.height;
