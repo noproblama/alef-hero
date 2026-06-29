@@ -594,15 +594,18 @@
                     border-radius: 0;
                 }
 
-                /* Hero text: bottom-centre on mobile */
+                /* Hero text: anchored proportionally below the constellation on mobile.
+                   top:70% keeps it just below the net on all phone heights instead of
+                   floating at a fixed distance from the very bottom (which leaves a
+                   huge gap on tall phones). */
                 #demo-hero {
                     position: absolute;
-                    top: auto;
-                    bottom: 2%;
+                    top: 70%;
+                    bottom: auto;
                     left: 0;
                     right: 0;
                     max-width: 100%;
-                    padding: 0 6% 20px;
+                    padding: 0 6% 12px;
                     text-align: center;
                     background: none !important;
                 }
