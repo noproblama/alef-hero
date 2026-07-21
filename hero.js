@@ -177,7 +177,7 @@ function positionButtons() {
       ic.style.top = b.y + "px";
       const img = ic.querySelector(".icon-img");
       if (img) {
-        const s = Math.round(b.d * 0.5);
+        const s = Math.round(b.d * 0.6);
         img.style.width = s + "px";
         img.style.height = s + "px";
       }
