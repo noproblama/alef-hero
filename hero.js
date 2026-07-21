@@ -11,8 +11,12 @@ function _getViewH() {
 }
 
 function resize() {
-  // Cap dpr at 1 on touch devices — halves canvas pixel count (4× fewer pixels to draw)
-  dpr = hasFinePointer ? window.devicePixelRatio || 1 : 1;
+  // Cap dpr at 2 on touch devices (was 1 — looked pixelated/blurry on retina phones).
+  // Still protects against 3x-dpr devices paying full cost; the fiber-net cache
+  // (CACHE_HAIRS) now absorbs most of the per-frame cost this was guarding against.
+  dpr = hasFinePointer
+    ? window.devicePixelRatio || 1
+    : Math.min(window.devicePixelRatio || 1, 2);
   W = window.innerWidth;
   H = _getViewH();
   canvas.width = W * dpr;
@@ -257,21 +261,39 @@ const btnAuraAlpha = [0, 0, 0, 0]; // per-button glow alpha
 
 // ── CONSTELLATION SYSTEM ──
 
+// Portrait-oriented viewport significantly taller than wide — phones AND tablets held
+// upright. Distinct from the old `W < 600` phone-only check: a tablet at e.g. 900×1200
+// used to fall through to the flat desktop sizing (netW 0.66, netZoom 0.8), which is
+// sized for a *wide* viewport — on a tall one that leaves the net small and floating
+// with big dead gaps above/below it. Any portrait aspect now gets the same treatment.
+function _isPortraitLayout() {
+  return H > W * 1.15;
+}
+
 const CNET = {
   // ── imported SVG network (path1.svg → SVGNET) placement ──
   get netW() {
-    return W < 600 ? 0.88 : 0.66;
-  }, // portrait phone uses near-full width
+    // Phone: intentionally wider than the viewport (net crops off left/right — it's
+    // decorative, cropping costs nothing) so the 4 buttons + their labels render
+    // ~20% bigger than a strict "fit inside the screen" width would allow. Kept
+    // conservative — much higher and "Alef Research"/"Alef Applied" labels start
+    // crowding the screen edge on narrow (~360px) phones.
+    if (W < 600) return 1.06;
+    if (_isPortraitLayout()) return 0.8; // tablet portrait: generous but not edge-to-edge
+    return 0.66; // landscape / desktop
+  },
   netH: 0.96,
   get netZoom() {
     if (W < 600) return 1.0; // portrait phone: netW=0.88 * 1.0 → same effective fit as old 0.44 * 2.0
     if (H < 500) return 0.65; // landscape phone: shrink to clear hero text gap
+    if (_isPortraitLayout()) return 1.05; // tablet portrait: grow to fill the tall viewport
     return 0.8;
   },
   netOffX: 0,
   get netOffY() {
     if (W < 600) return -H * 0.07; // portrait phone: shift up to clear hero text
     if (H < 500) return -H * 0.02; // landscape phone: near-centre vertically
+    if (_isPortraitLayout()) return -H * 0.04; // tablet portrait: nudge up to balance space below hero text
     return 0;
   },
   btnFit: 1.0, // button diameter as a fraction of its SVG ring
@@ -747,11 +769,10 @@ function drawConstellation(fadeIn) {
   ctx.globalCompositeOperation = "source-over";
 
   // ── Gradient travelers — only after all lines revealed, fade in smoothly ─
-  // Skip on touch devices (too expensive for mobile GPUs)
   if (!_lineRevealDone) {
     ctx.globalCompositeOperation = "source-over";
   }
-  if (_lineRevealDone && hasFinePointer) {
+  if (_lineRevealDone) {
     if (!_cs._travelFadeStartT) _cs._travelFadeStartT = T;
     const _travelA = Math.min(1, (T - _cs._travelFadeStartT) / 50);
     ctx.globalCompositeOperation = "lighter";

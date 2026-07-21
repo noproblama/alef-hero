@@ -659,7 +659,7 @@ canvas {
         background: none !important;
     }
     #demo-hero h1 {
-        font-size: 14px;
+        font-size: 19px;
         line-height: 1.25;
         margin-bottom: 8px;
         text-shadow:
@@ -673,7 +673,7 @@ canvas {
         width: 22px;
     }
     #demo-hero p {
-        font-size: 13px;
+        font-size: 14.5px;
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.72);
     }
@@ -684,6 +684,9 @@ canvas {
     }
     .btn-sub {
         display: none !important;
+    }
+    .btn-label {
+        font-size: 13px !important;
     }
 
     /* Hide scroll indicator on mobile */
