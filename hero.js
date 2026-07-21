@@ -21,12 +21,27 @@ function resize() {
   canvas.style.height = H + "px";
   ctx.resetTransform();
   ctx.scale(dpr, dpr);
+  _hairCache = null; // stale after any size change — rebuilt lazily next frame
 }
 let _lastBuildW = 0;
 let _hoverFade = 0; // 0=muted, 1=active hover
 let _lastHovBtnIdx = -1; // last hovered btn — kept during fade-out
 let _hoverPos = null; // interpolated world position of hover glow
 let _bposCache = null;
+
+// ── Fiber-net cache toggle ──────────────────────────────────────────
+// The fiber net (hairs) is ~145 paths / ~7,600 points, stroked twice per
+// frame (bloom + crisp pass) — this is the single biggest per-frame canvas
+// cost, and it's fully static whenever the reveal animation has finished
+// and nothing is being hovered (brightness only varies during hover).
+// When CACHE_HAIRS is true, that static case is pre-rendered once to an
+// offscreen canvas and blitted instead of re-stroked every frame; hover
+// and the in-progress reveal animation still draw live exactly as before.
+//
+// TO UNDO: set CACHE_HAIRS = false below — this instantly reverts to the
+// original always-live rendering with no other code changes needed.
+const CACHE_HAIRS = true;
+let _hairCache = null; // offscreen <canvas> with pre-baked static hairs, or null if stale/unbuilt
 
 function _onResize(widthChanged) {
   resize();
@@ -458,7 +473,52 @@ function _buildDew(hairs) {
 let _cs = null;
 let _lineRevealDone = false;
 
+// Pre-bake the fiber net (fully revealed, non-hover brightness) to an offscreen
+// canvas. Mirrors the live drawing block in drawConstellation() exactly (same
+// colors/composite ops/alpha) so swapping between cache and live is seamless —
+// only call this once _lineRevealDone is true.
+function _buildHairCache() {
+  const off = document.createElement("canvas");
+  off.width = Math.max(1, Math.ceil(W * dpr));
+  off.height = Math.max(1, Math.ceil(H * dpr));
+  const octx = off.getContext("2d");
+  octx.scale(dpr, dpr);
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  octx.lineCap = "round";
+  const hm = 0.62; // default (non-hover) brightness — must match the live default exactly
+  for (const h of _cs.hairs) {
+    const P = h.pts;
+    octx.lineWidth = h.thick ? 2.4 : 1.6;
+    octx.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * h.bright * hm})`;
+    octx.beginPath();
+    octx.moveTo(P[0].x, P[0].y);
+    for (let i = 1; i < P.length; i++) octx.lineTo(P[i].x, P[i].y);
+    octx.stroke();
+    octx.lineWidth = h.thick ? 0.9 : 0.6;
+    octx.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * h.bright * hm})`;
+    octx.beginPath();
+    octx.moveTo(P[0].x, P[0].y);
+    for (let i = 1; i < P.length; i++) octx.lineTo(P[i].x, P[i].y);
+    octx.stroke();
+    if (h.dotIdx && h.dotIdx.length) {
+      octx.fillStyle = `rgba(255,242,214,${CNET.dotAlpha})`;
+      octx.beginPath();
+      for (const idx of h.dotIdx) {
+        const p = P[idx];
+        if (!p) continue;
+        octx.moveTo(p.x + 0.9, p.y);
+        octx.arc(p.x, p.y, 0.9, 0, TAU);
+      }
+      octx.fill();
+    }
+  }
+  octx.restore();
+  _hairCache = off;
+}
+
 function buildConstellation(seed) {
+  _hairCache = null; // geometry is about to change — stale cache would show the old net
   _cnetSeed = seed !== undefined ? seed : FIXED_SEED;
   const pos = btnPositions();
   const cx = (pos[0].x + pos[1].x + pos[2].x + pos[3].x) / 4;
@@ -570,60 +630,72 @@ function drawConstellation(fadeIn) {
     }
   }
 
-  // ── Fiber net: always drawn live — no cache switch (eliminates brightness jump) ──
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-  ctx.lineCap = "round";
-  for (const h of _cs.hairs) {
-    const bp = h.birthT ?? 0;
-    const prog = _lineRevealDone
-      ? 1
-      : T < bp
-        ? 0
-        : Math.min(1, (T - bp) / (h.drawDur || 30));
-    if (prog <= 0) continue;
-    const P = h.pts;
-    const nPts = prog >= 1 ? P.length : Math.max(2, Math.ceil(prog * P.length));
-    // Hover brightness: smooth radial falloff from interpolated position
-    let hm = 0.62;
-    if (_hoverFade > 0.005 && _hoverPos) {
-      let minD2 = Infinity;
-      for (const p of P) {
-        const dx = p.x - _hoverPos.x,
-          dy = p.y - _hoverPos.y;
-        const d2 = dx * dx + dy * dy;
-        if (d2 < minD2) minD2 = d2;
+  // ── Fiber net ───────────────────────────────────────────────────
+  // Static (fully revealed, not hovered) → blit the pre-baked cache instead of
+  // re-stroking ~145 paths / ~7,600 points twice every frame. Reveal-in-progress
+  // and hover both still draw fully live, unchanged from before. See CACHE_HAIRS.
+  const _useHairCache = CACHE_HAIRS && _lineRevealDone && _hoverFade <= 0.005;
+  if (_useHairCache) {
+    if (!_hairCache) _buildHairCache();
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.drawImage(_hairCache, 0, 0, W, H);
+    ctx.restore();
+  } else {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineCap = "round";
+    for (const h of _cs.hairs) {
+      const bp = h.birthT ?? 0;
+      const prog = _lineRevealDone
+        ? 1
+        : T < bp
+          ? 0
+          : Math.min(1, (T - bp) / (h.drawDur || 30));
+      if (prog <= 0) continue;
+      const P = h.pts;
+      const nPts = prog >= 1 ? P.length : Math.max(2, Math.ceil(prog * P.length));
+      // Hover brightness: smooth radial falloff from interpolated position
+      let hm = 0.62;
+      if (_hoverFade > 0.005 && _hoverPos) {
+        let minD2 = Infinity;
+        for (const p of P) {
+          const dx = p.x - _hoverPos.x,
+            dy = p.y - _hoverPos.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < minD2) minD2 = d2;
+        }
+        // Smooth falloff: full brightness ≤130 px, muted ≥330 px
+        const t = Math.max(0, Math.min(1, (Math.sqrt(minD2) - 130) / 200));
+        const brightMul = 1.25 - t * (1.25 - 0.18);
+        hm = 0.62 + (brightMul - 0.62) * _hoverFade;
       }
-      // Smooth falloff: full brightness ≤130 px, muted ≥330 px
-      const t = Math.max(0, Math.min(1, (Math.sqrt(minD2) - 130) / 200));
-      const brightMul = 1.25 - t * (1.25 - 0.18);
-      hm = 0.62 + (brightMul - 0.62) * _hoverFade;
-    }
-    ctx.lineWidth = h.thick ? 2.4 : 1.6;
-    ctx.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * h.bright * hm})`;
-    ctx.beginPath();
-    ctx.moveTo(P[0].x, P[0].y);
-    for (let i = 1; i < nPts; i++) ctx.lineTo(P[i].x, P[i].y);
-    ctx.stroke();
-    ctx.lineWidth = h.thick ? 0.9 : 0.6;
-    ctx.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * h.bright * hm})`;
-    ctx.beginPath();
-    ctx.moveTo(P[0].x, P[0].y);
-    for (let i = 1; i < nPts; i++) ctx.lineTo(P[i].x, P[i].y);
-    ctx.stroke();
-    if (prog >= 1 && h.dotIdx && h.dotIdx.length) {
-      ctx.fillStyle = `rgba(255,242,214,${CNET.dotAlpha})`;
+      ctx.lineWidth = h.thick ? 2.4 : 1.6;
+      ctx.strokeStyle = `rgba(255,205,150,${CNET.bloomAlpha * h.bright * hm})`;
       ctx.beginPath();
-      for (const idx of h.dotIdx) {
-        const p = P[idx];
-        if (!p) continue;
-        ctx.moveTo(p.x + 0.9, p.y);
-        ctx.arc(p.x, p.y, 0.9, 0, TAU);
+      ctx.moveTo(P[0].x, P[0].y);
+      for (let i = 1; i < nPts; i++) ctx.lineTo(P[i].x, P[i].y);
+      ctx.stroke();
+      ctx.lineWidth = h.thick ? 0.9 : 0.6;
+      ctx.strokeStyle = `rgba(255,240,210,${CNET.crispAlpha * h.bright * hm})`;
+      ctx.beginPath();
+      ctx.moveTo(P[0].x, P[0].y);
+      for (let i = 1; i < nPts; i++) ctx.lineTo(P[i].x, P[i].y);
+      ctx.stroke();
+      if (prog >= 1 && h.dotIdx && h.dotIdx.length) {
+        ctx.fillStyle = `rgba(255,242,214,${CNET.dotAlpha})`;
+        ctx.beginPath();
+        for (const idx of h.dotIdx) {
+          const p = P[idx];
+          if (!p) continue;
+          ctx.moveTo(p.x + 0.9, p.y);
+          ctx.arc(p.x, p.y, 0.9, 0, TAU);
+        }
+        ctx.fill();
       }
-      ctx.fill();
     }
+    ctx.restore();
   }
-  ctx.restore();
 
   // ── Bright sparkles at the busiest crossings (live twinkle) ───
   ctx.globalAlpha = 1;
