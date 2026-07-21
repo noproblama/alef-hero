@@ -74,6 +74,16 @@ if (window.visualViewport) {
   let _prevVPW = window.visualViewport.width;
   let _prevVPH = window.visualViewport.height;
   window.visualViewport.addEventListener("resize", () => {
+    // Pinch/trackpad zoom (mobile pinch, or Mac trackpad pinch in Safari) also fires
+    // this event: it shrinks visualViewport.width/height while window.innerWidth stays
+    // fixed (the layout viewport doesn't change), and visualViewport.scale departs from
+    // 1. resize() mixes W=innerWidth with H=visualViewport.height, so a zoom event with
+    // scale!=1 would feed it a mismatched pair and corrupt the layout. Ignore the event
+    // entirely while zoomed — the browser already handles zoom visually on its own; we
+    // only want to react to real viewport-size changes (toolbar show/hide, rotation),
+    // which all happen at scale≈1. Not updating _prevVPW/_prevVPH here means returning
+    // to 100% zoom naturally resolves back to a no-op.
+    if (Math.abs(window.visualViewport.scale - 1) > 0.02) return;
     const w = window.visualViewport.width;
     const h = window.visualViewport.height;
     const wChanged = Math.abs(w - _prevVPW) > 4;
