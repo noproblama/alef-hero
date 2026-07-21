@@ -263,7 +263,7 @@ const CNET = {
   get bgCount() {
     return hasFinePointer ? 700 : 50;
   }, // reduce starfield on touch
-  bgAlpha: 0.5, // background field brightness scale
+  bgAlpha: 0.9, // background field brightness scale
 };
 
 // ── Per-load random seed → different layout each reload ───────────
@@ -362,12 +362,45 @@ function _buildBackground(cx, cy) {
   for (let i = 0; i < CNET.bgCount; i++) {
     const x = _cnetRng() * W;
     const y = _cnetRng() * H;
-    const size = 0.1 + _cnetRng() * 1.6;
+    const size = 0.1 + _cnetRng() * 2.6;
     const phase = _cnetRng() * TAU;
     const bright = 0.35 + _cnetRng() * 0.75;
     const star = _cnetRng() < 0.05;
     const inBtn = bpos.some((p) => Math.hypot(x - p.x, y - p.y) < 68);
-    if (!inBtn) nodes.push({ x, y, size, phase, bright, star });
+    if (inBtn) continue;
+    // Slow organic drift — two mismatched sine wanderers per axis (Lissajous-like path,
+    // never repeats on a short cycle) plus a small faster wobble for a "breathing"/alive feel.
+    // Bigger dots drift 20–30% faster than smaller ones (which keep their original speed) —
+    // reads like foreground/background parallax rather than a uniform field. The whole field
+    // also runs 35% faster overall (relative speed spread between sizes is unchanged).
+    const sizeFrac = Math.min(1, Math.max(0, (size - 0.3) / 2.6));
+    const speedMul = 2.35 * (1 + sizeFrac * (0.2 + _cnetRng() * 0.1));
+    const driftAmpX = 6 + _cnetRng() * 22;
+    const driftAmpY = 6 + _cnetRng() * 22;
+    const driftFqX = (0.02 + _cnetRng() * 0.05) * speedMul;
+    const driftFqY = (0.017 + _cnetRng() * 0.045) * speedMul;
+    const driftPhX = _cnetRng() * TAU;
+    const driftPhY = _cnetRng() * TAU;
+    const wobAmp = 1.5 + _cnetRng() * 3;
+    const wobFq = (0.12 + _cnetRng() * 0.18) * speedMul;
+    const wobPh = _cnetRng() * TAU;
+    nodes.push({
+      bx: x,
+      by: y,
+      size,
+      phase,
+      bright,
+      star,
+      driftAmpX,
+      driftAmpY,
+      driftFqX,
+      driftFqY,
+      driftPhX,
+      driftPhY,
+      wobAmp,
+      wobFq,
+      wobPh,
+    });
   }
   return nodes;
 }
@@ -514,17 +547,25 @@ function drawConstellation(fadeIn) {
   const cx = _cs.cx,
     cy = _cs.cy;
 
-  // ── Background starfield (live twinkle) ───────────────────────
+  // ── Background starfield (live twinkle + slow organic drift) ──
   ctx.globalAlpha = 1;
   for (const n of _cs.bg) {
     const sh = (Math.sin(now * 1.2 + n.phase) + 1) * 0.5;
-    const a = (0.5 + sh * 0.7) * n.bright * CNET.bgAlpha * fi;
+    const a = (0.2 + sh * 0.7) * n.bright * CNET.bgAlpha * fi;
+    const x =
+      n.bx +
+      Math.sin(now * n.driftFqX + n.driftPhX) * n.driftAmpX +
+      Math.sin(now * n.wobFq + n.wobPh) * n.wobAmp;
+    const y =
+      n.by +
+      Math.cos(now * n.driftFqY + n.driftPhY) * n.driftAmpY +
+      Math.cos(now * n.wobFq * 1.3 + n.wobPh) * n.wobAmp * 0.6;
     if (n.star) {
-      _drawSparkle(n.x, n.y, a * 0.95, 2.4, 0.4);
+      _drawSparkle(x, y, a * 0.95, 2, 0.4);
     } else {
       ctx.fillStyle = `rgba(255,224,180,${a})`;
       ctx.beginPath();
-      ctx.arc(n.x, n.y, n.size, 0, TAU);
+      ctx.arc(x, y, n.size, 0, TAU);
       ctx.fill();
     }
   }
@@ -931,6 +972,18 @@ function animate() {
 positionButtons();
 setupBtnHoverListeners();
 positionBird();
+
+// Vignette-reveal is a one-shot CSS animation — drop it from the DOM once done
+// so the fixed full-viewport layer stops costing paint/composite time.
+(function () {
+  const vignette = document.getElementById("vignette-reveal");
+  const hole = document.getElementById("vignette-hole");
+  if (vignette && hole) {
+    hole.addEventListener("animationend", () => vignette.remove(), {
+      once: true,
+    });
+  }
+})();
 
 // Autoplay with fallback hide if blocked (e.g. iOS low-power mode)
 (function () {
