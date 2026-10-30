@@ -123,14 +123,17 @@ window.addEventListener("mouseout", () => {
 });
 let T = 0;
 
-// Centres of the 4 empty ring-circles in path1.svg (SVG coords), per button.
-// [svgX, svgY, svgRingRadius] for each button's empty circle in path1.svg
-const BTN_RINGS = [
-  [95.1, 89.6, 11.366], // btn-0 Centre
-  [95.5, 33.7, 12.253], // btn-1 Learning (slightly bigger)
-  [148.7, 111.9, 11.366], // btn-2 Applied
-  [41.2, 112.1, 11.366], // btn-3 Research
-];
+// [svgX, svgY, svgRingRadius] per button, taken from the ring circles that
+// parse_svgnet.mjs detects in the drawing, assigned by position:
+// btn-0 Community = lowest, btn-1 Learning = highest, btn-2 In Practice = right,
+// btn-3 Research = left.
+const BTN_RINGS = (() => {
+  const rs = [...SVGNET.rings].sort((a, b) => a[1] - b[1]);
+  const learning = rs[0];
+  const community = rs[rs.length - 1];
+  const [research, practice] = rs.slice(1, -1).sort((a, b) => a[0] - b[0]);
+  return [community, learning, practice, research];
+})();
 // Centre the network on the 4 button-rings' centroid (so the buttons are balanced).
 function _netAnchor() {
   let ax = 0,
@@ -278,8 +281,9 @@ const CNET = {
     // ~20% bigger than a strict "fit inside the screen" width would allow. Kept
     // conservative — much higher and "Alef Research"/"Alef Applied" labels start
     // crowding the screen edge on narrow (~360px) phones.
-    if (W < 600) return 1.06;
-    if (_isPortraitLayout()) return 0.8; // tablet portrait: generous but not edge-to-edge
+    // phone cap: "ALEF IN PRACTICE" label must stay on-screen on a 360px phone
+    if (W < 600) return 1.25;
+    if (_isPortraitLayout()) return 1.0; // tablet portrait: generous but not edge-to-edge
     return 0.66; // landscape / desktop
   },
   netH: 0.96,
@@ -287,7 +291,7 @@ const CNET = {
     if (W < 600) return 1.0; // portrait phone: netW=0.88 * 1.0 → same effective fit as old 0.44 * 2.0
     if (H < 500) return 0.65; // landscape phone: shrink to clear hero text gap
     if (_isPortraitLayout()) return 1.05; // tablet portrait: grow to fill the tall viewport
-    return 0.8;
+    return 1.0;
   },
   netOffX: 0,
   get netOffY() {
